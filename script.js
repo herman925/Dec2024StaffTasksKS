@@ -49,35 +49,179 @@ function generateCSVContent() {
     return csvContent;
 }
 
+// Function to create custom path selection dialog
+function createPathDialog() {
+    // Common OneDrive paths
+    const commonPaths = [
+        'C:\\Users\\[YourName]\\OneDrive',
+        'C:\\Users\\[YourName]\\OneDrive - The Education University of Hong Kong',
+        'D:\\OneDrive',
+        'D:\\OneDrive - The Education University of Hong Kong',
+        'E:\\OneDrive',
+        'E:\\OneDrive - The Education University of Hong Kong'
+    ];
+
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    `;
+
+    // Create modal content
+    const content = document.createElement('div');
+    content.style.cssText = `
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 600px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    `;
+
+    // Create title
+    const title = document.createElement('h3');
+    title.textContent = 'Select OneDrive Root Folder';
+    title.style.cssText = `
+        margin: 0 0 15px 0;
+        color: #333;
+    `;
+
+    // Create description
+    const description = document.createElement('p');
+    description.textContent = 'Select a common path or enter your own:';
+    description.style.cssText = `
+        margin: 0 0 15px 0;
+        color: #666;
+    `;
+
+    // Create input container
+    const inputContainer = document.createElement('div');
+    inputContainer.style.cssText = `
+        margin-bottom: 20px;
+    `;
+
+    // Create datalist for suggestions
+    const datalist = document.createElement('datalist');
+    datalist.id = 'pathSuggestions';
+    commonPaths.forEach(path => {
+        const option = document.createElement('option');
+        option.value = path;
+        datalist.appendChild(option);
+    });
+
+    // Create input with datalist
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = commonPaths[0];
+    input.setAttribute('list', 'pathSuggestions');
+    input.style.cssText = `
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+        font-family: monospace;
+    `;
+
+    // Create path preview
+    const preview = document.createElement('div');
+    preview.style.cssText = `
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        word-wrap: break-word;
+        font-family: monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+    `;
+
+    // Update preview function
+    function updatePreview() {
+        const fullPath = input.value + 
+            '\\The Education University of Hong Kong' +
+            '\\o365grp_KeySteps@JC - General' +
+            '\\00 - Project Admin' +
+            '\\Summary of Team Task' +
+            '\\Dec 2024 Pre-Christmas Tasks';
+        preview.textContent = 'Full path will be:\n' + fullPath;
+    }
+    input.addEventListener('input', updatePreview);
+    updatePreview();
+
+    // Create buttons container
+    const buttons = document.createElement('div');
+    buttons.style.cssText = `
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    `;
+
+    // Create OK button
+    const okButton = document.createElement('button');
+    okButton.textContent = 'OK';
+    okButton.style.cssText = `
+        padding: 8px 16px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    `;
+    okButton.addEventListener('click', () => {
+        localStorage.setItem('onedrivePath', input.value);
+        document.body.removeChild(modal);
+        location.reload(); // Reload to apply changes
+    });
+
+    // Create Cancel button
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.style.cssText = `
+        padding: 8px 16px;
+        background: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+    `;
+    cancelButton.addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+
+    // Assemble the modal
+    buttons.appendChild(cancelButton);
+    buttons.appendChild(okButton);
+    content.appendChild(title);
+    content.appendChild(description);
+    inputContainer.appendChild(input);
+    inputContainer.appendChild(datalist);
+    content.appendChild(inputContainer);
+    content.appendChild(preview);
+    content.appendChild(buttons);
+    modal.appendChild(content);
+
+    return modal;
+}
+
 // Function to get OneDrive path
 function getOneDrivePath() {
     let path = localStorage.getItem('onedrivePath');
     if (!path) {
-        // Common OneDrive paths
-        const commonPaths = [
-            'C:\\Users\\[YourName]\\OneDrive',
-            'C:\\Users\\[YourName]\\OneDrive - The Education University of Hong Kong',
-            'D:\\OneDrive',
-            'D:\\OneDrive - The Education University of Hong Kong',
-            'E:\\OneDrive',
-            'E:\\OneDrive - The Education University of Hong Kong'
-        ];
-
-        // Show dialog with common paths
-        const message = 
-            'Please enter your OneDrive root folder path.\n\n' +
-            'Common paths are:\n' + 
-            commonPaths.join('\n') + 
-            '\n\nThe rest of the path will be automatically appended:\n' +
-            '\\The Education University of Hong Kong\\o365grp_KeySteps@JC - General\\00 - Project Admin\\Summary of Team Task\\Dec 2024 Pre-Christmas Tasks';
-
-        path = prompt(message, commonPaths[0]);
-        
-        if (path) {
-            localStorage.setItem('onedrivePath', path);
-        }
+        const modal = createPathDialog();
+        document.body.appendChild(modal);
+        return null;
     }
-    return path ? path + '\\The Education University of Hong Kong\\o365grp_KeySteps@JC - General\\00 - Project Admin\\Summary of Team Task\\Dec 2024 Pre-Christmas Tasks' : null;
+    return path + '\\The Education University of Hong Kong\\o365grp_KeySteps@JC - General\\00 - Project Admin\\Summary of Team Task\\Dec 2024 Pre-Christmas Tasks';
 }
 
 // Function to save tasks
@@ -269,7 +413,16 @@ async function toggleTask(staffName, taskId) {
     const task = staffData[staffName].tasks.find(t => t.id === taskId);
     if (task) {
         task.completed = !task.completed;
-        saveTasksToCSV();
+        
+        // Save to localStorage as backup
+        localStorage.setItem('staffTasks', JSON.stringify(staffData));
+        
+        // Show confirmation dialog
+        const confirmSave = confirm('Would you like to save this change to the tasks.csv file?');
+        if (confirmSave) {
+            saveTasksToCSV();
+        }
+        
         displayTasks(staffName);
     }
 }
@@ -279,7 +432,15 @@ async function updateRemarks(staffName, taskId, remarks) {
     const task = staffData[staffName].tasks.find(t => t.id === taskId);
     if (task) {
         task.remarks = remarks;
-        saveTasksToCSV();
+        
+        // Save to localStorage as backup
+        localStorage.setItem('staffTasks', JSON.stringify(staffData));
+        
+        // Show confirmation dialog
+        const confirmSave = confirm('Would you like to save this change to the tasks.csv file?');
+        if (confirmSave) {
+            saveTasksToCSV();
+        }
     }
 }
 
@@ -287,22 +448,20 @@ async function updateRemarks(staffName, taskId, remarks) {
 function addChangePathButton() {
     const button = document.createElement('button');
     button.textContent = 'Change OneDrive Path';
-    button.style.position = 'fixed';
-    button.style.bottom = '10px';
-    button.style.right = '10px';
-    button.style.padding = '10px';
-    button.style.backgroundColor = '#f0f0f0';
-    button.style.border = '1px solid #ccc';
-    button.style.borderRadius = '5px';
-    button.style.cursor = 'pointer';
+    button.style.cssText = `
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+    `;
     button.onclick = function() {
-        if (confirm('Do you want to change your OneDrive path?')) {
-            localStorage.removeItem('onedrivePath');
-            const newPath = getOneDrivePath();
-            if (newPath) {
-                alert('OneDrive path updated successfully!\n\nNew path:\n' + newPath);
-            }
-        }
+        localStorage.removeItem('onedrivePath');
+        const modal = createPathDialog();
+        document.body.appendChild(modal);
     };
     document.body.appendChild(button);
 }
