@@ -288,7 +288,7 @@ function showOneDrivePathDialog() {
     modal.innerHTML = `
         <div class="onedrive-modal-content">
             <h2 style="margin-top: 0;">Select OneDrive Path</h2>
-            <p>Please select your OneDrive path or upload a tasks file:</p>
+            <p>Please select your OneDrive path or browse for the tasks.json file:</p>
             
             <div style="margin: 20px 0;">
                 <div class="path-input-container">
@@ -298,24 +298,19 @@ function showOneDrivePathDialog() {
                         <option value="D:">D: Drive</option>
                         <option value="E:">E: Drive</option>
                     </select>
-                    <input type="file" id="folderInput" webkitdirectory style="display: none;">
+                    <input type="file" id="folderInput" accept=".json" style="display: none;">
                     <button class="browse-button" onclick="document.getElementById('folderInput').click()">Browse...</button>
                 </div>
                 
                 <div id="emailInputContainer" class="email-input-container">
-                    <label for="staffEmail">Enter your staff email (without @eduhk.hk):</label>
-                    <input type="text" id="staffEmail" placeholder="e.g., s1234567" />
+                    <label for="staffEmail">Enter your local username (usually it is xxx@eduhk.hk without @eduhk.hk):</label>
+                    <input type="text" id="staffEmail" placeholder="e.g., hkkchan" />
                 </div>
 
                 <div style="margin-top: 15px;">
                     <p style="margin: 5px 0;">Path preview:</p>
                     <div id="pathPreview" style="word-break: break-all; padding: 10px; background: #f5f5f5; border-radius: 4px;"></div>
                 </div>
-            </div>
-
-            <div style="margin: 20px 0;">
-                <p>Or upload a tasks file:</p>
-                <input type="file" id="taskFileInput" accept=".json" style="margin-top: 10px;">
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
@@ -347,7 +342,7 @@ function showOneDrivePathDialog() {
                     '\\Dec 2024 Pre-Christmas Tasks' +
                     '\\tasks.json';
             } else {
-                fullPath = 'Please enter your staff email';
+                fullPath = 'Please enter your username above';
             }
             emailInputContainer.classList.add('visible');
         } else {
@@ -372,28 +367,35 @@ function showOneDrivePathDialog() {
     const folderInput = modal.querySelector('#folderInput');
     folderInput.addEventListener('change', function(e) {
         if (this.files.length > 0) {
-            // Get the path from the first file
-            const path = this.files[0].webkitRelativePath.split('/')[0];
+            // Get the path from the selected file
+            const filePath = this.files[0].path;
+            if (!filePath) {
+                showLoadingMessage('Unable to get file path. Please select a drive from the dropdown.', true);
+                return;
+            }
+
+            // Extract the drive letter and path
+            const driveLetter = filePath.split(':')[0] + ':';
             const select = this.closest('.onedrive-modal-content').querySelector('#pathInput');
             
-            // Update the select with the chosen path
-            const option = document.createElement('option');
-            option.value = path;
-            option.textContent = path;
-            
-            // Check if option already exists
-            let exists = false;
+            // Update the select with the drive letter
+            let driveOption = null;
             for (let opt of select.options) {
-                if (opt.value === path) {
-                    exists = true;
+                if (opt.value === driveLetter) {
+                    driveOption = opt;
                     break;
                 }
             }
             
-            if (!exists) {
+            if (!driveOption) {
+                const option = document.createElement('option');
+                option.value = driveLetter;
+                option.textContent = `${driveLetter} Drive`;
                 select.appendChild(option);
+                driveOption = option;
             }
-            select.value = path;
+            
+            select.value = driveLetter;
             
             // Trigger the path preview update
             select.dispatchEvent(new Event('input'));
@@ -406,7 +408,7 @@ async function saveOneDrivePath(button) {
     const dialog = button.closest('.onedrive-modal');
     const pathInput = dialog.querySelector('#pathInput');
     const staffEmailInput = dialog.querySelector('#staffEmail');
-    const fileInput = dialog.querySelector('#taskFileInput');
+    const folderInput = dialog.querySelector('#folderInput');
     
     try {
         // Get selected path
@@ -436,9 +438,9 @@ async function saveOneDrivePath(button) {
         // Save path to localStorage
         localStorage.setItem('onedrivePath', fullPath);
 
-        // If a file was selected, read and use its content
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
+        // If a file was selected through browse, read and use its content
+        if (folderInput.files.length > 0) {
+            const file = folderInput.files[0];
             const reader = new FileReader();
             
             reader.onload = async function(e) {
