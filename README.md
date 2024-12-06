@@ -1,45 +1,66 @@
-# Staff Task Manager
+# Pre-Christmas 2024 Chase Down
 
-A web-based task management system for staff members.
+A festive web-based task management system for tracking staff tasks during the pre-Christmas period.
 
 ## Features
 
-- View and manage tasks for different staff members
-- Mark tasks as complete
-- Add remarks to tasks
-- Collapsible task view
-- Automatic data persistence
-- Offline support
+- **Staff Selection**: Choose from multiple staff members including SRAs, PAs, and RAs
+- **Interactive Task Management**:
+  - View individual tasks for each staff member
+  - Mark tasks as complete with checkboxes
+  - Add and edit remarks for each task
+  - Detailed task view in a modal window
+- **User Interface**:
+  - Festive Christmas theme with snowflakes animation
+  - Intuitive task cards with Christmas icons
+  - Responsive design for all screen sizes
+- **Data Management**:
+  - Local storage support for task data
+  - OneDrive integration for task loading and saving
+  - Automatic save notifications
+  - Task data persistence between sessions
 
-## Setup
+## File Structure
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file with your GitHub configuration:
-   ```
-   GITHUB_TOKEN=your_github_token_here
-   GITHUB_OWNER=your_github_username
-   GITHUB_REPO=your_repo_name
-   PORT=3000
-   ```
-4. Start the server:
-   ```bash
-   npm start
-   ```
+- `index.html` - Main application interface
+- `script.js` - Core application logic and functionality
+- `styles.css` - Styling and animations
+- `tasks.json` - Task data storage
 
-## Development
+## Usage
 
-- Frontend files are in the `public` directory
-- Backend server code is in `server.js`
-- Task data is stored in `tasks.csv`
+1. Open `index.html` in a web browser
+2. Select a staff member from the dropdown menu
+3. View and manage their assigned tasks
+4. Click on a task to view/edit details and remarks
+5. Use the checkbox to mark tasks as complete
+6. Changes are automatically saved
 
-## Contributing
+## Technical Details
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+- Built with vanilla JavaScript for lightweight performance
+- Uses modern CSS features for styling and animations
+- Implements Font Awesome icons for visual elements
+- Integrates Google Fonts for typography
+- Responsive design using CSS Flexbox
+
+## Data Structure
+
+Tasks are organized by staff member in the following structure:
+```json
+{
+  "staff": {
+    "[Staff Name]": {
+      "position": "[Position]",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Task description",
+          "description": "Detailed task description",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    }
+  }
+}
