@@ -55,22 +55,24 @@ function getOneDrivePath() {
     if (!path) {
         // Common OneDrive paths
         const commonPaths = [
-            'C:\\Users\\' + (process.env.USERNAME || '') + '\\OneDrive',
-            'C:\\Users\\' + (process.env.USERNAME || '') + '\\OneDrive - The Education University of Hong Kong',
+            'C:\\Users\\[YourName]\\OneDrive',
+            'C:\\Users\\[YourName]\\OneDrive - The Education University of Hong Kong',
             'D:\\OneDrive',
             'D:\\OneDrive - The Education University of Hong Kong',
             'E:\\OneDrive',
             'E:\\OneDrive - The Education University of Hong Kong'
         ];
 
-        path = prompt(
-            'Please enter your OneDrive root folder path. Common paths are:\n' + 
+        // Show dialog with common paths
+        const message = 
+            'Please enter your OneDrive root folder path.\n\n' +
+            'Common paths are:\n' + 
             commonPaths.join('\n') + 
             '\n\nThe rest of the path will be automatically appended:\n' +
-            '\\The Education University of Hong Kong\\o365grp_KeySteps@JC - General\\00 - Project Admin\\Summary of Team Task\\Dec 2024 Pre-Christmas Tasks',
-            commonPaths[0]
-        );
+            '\\The Education University of Hong Kong\\o365grp_KeySteps@JC - General\\00 - Project Admin\\Summary of Team Task\\Dec 2024 Pre-Christmas Tasks';
 
+        path = prompt(message, commonPaths[0]);
+        
         if (path) {
             localStorage.setItem('onedrivePath', path);
         }
@@ -298,7 +300,7 @@ function addChangePathButton() {
             localStorage.removeItem('onedrivePath');
             const newPath = getOneDrivePath();
             if (newPath) {
-                alert('OneDrive path updated. New path:\n' + newPath);
+                alert('OneDrive path updated successfully!\n\nNew path:\n' + newPath);
             }
         }
     };
