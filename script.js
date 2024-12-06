@@ -49,11 +49,19 @@ function generateCSVContent() {
     return csvContent;
 }
 
-// GitHub configuration
-const REPO_OWNER = 'herman925';
-const REPO_NAME = 'Dec2024StaffTasksKS';
+// Function to get OneDrive path
+function getOneDrivePath() {
+    let path = localStorage.getItem('onedrivePath');
+    if (!path) {
+        path = prompt('Please enter your OneDrive path to the tasks folder (e.g., C:\\Users\\YourName\\OneDrive\\The Education University of Hong Kong\\o365grp_KeySteps@JC - General\\00 - Project Admin\\Summary of Team Task\\Dec 2024 Pre-Christmas Tasks):', '');
+        if (path) {
+            localStorage.setItem('onedrivePath', path);
+        }
+    }
+    return path;
+}
 
-// Function to save tasks to GitHub
+// Function to save tasks
 async function saveTasksToCSV() {
     try {
         // Save to localStorage as backup
@@ -62,67 +70,115 @@ async function saveTasksToCSV() {
         // Generate CSV content
         const csvContent = generateCSVContent();
         
-        // Create a new GitHub issue with the CSV content
-        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/vnd.github.v3+json'
-            },
-            body: JSON.stringify({
-                title: 'Update Tasks',
-                body: '```csv\n' + csvContent + '\n```\nPlease update tasks.csv with this content.'
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to create GitHub issue');
+        // Get OneDrive path
+        const onedrivePath = getOneDrivePath();
+        if (!onedrivePath) {
+            throw new Error('OneDrive path not set');
         }
-
-        console.log('Changes saved to GitHub issue');
-        alert('Changes have been submitted as a GitHub issue. An administrator will review and update the tasks.');
+        
+        // Create a temporary element to trigger file download
+        const element = document.createElement('a');
+        const file = new Blob([csvContent], {type: 'text/csv'});
+        element.href = URL.createObjectURL(file);
+        element.download = 'tasks.csv';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+        
+        // Show success message
+        const message = document.createElement('div');
+        message.style.position = 'fixed';
+        message.style.top = '10px';
+        message.style.left = '50%';
+        message.style.transform = 'translateX(-50%)';
+        message.style.backgroundColor = '#4CAF50';
+        message.style.color = 'white';
+        message.style.padding = '15px';
+        message.style.borderRadius = '5px';
+        message.style.zIndex = '1000';
+        message.textContent = 'Please save the file to your OneDrive folder as tasks.csv';
+        
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 5000);
     } catch (error) {
-        console.error('Error saving to GitHub:', error);
-        alert('Failed to save changes to GitHub. Your changes are saved locally.');
+        console.error('Error saving tasks:', error);
+        alert('Error saving changes. Please try again.');
     }
 }
 
-// Function to load tasks from GitHub
+// Function to load tasks
 async function loadTasksFromCSV() {
     try {
-        console.log('Loading tasks from GitHub...');
-        const response = await fetch('https://raw.githubusercontent.com/herman925/Dec2024StaffTasksKS/main/tasks.csv');
-        
-        if (!response.ok) {
-            throw new Error('Failed to load tasks');
+        // Get OneDrive path
+        const onedrivePath = getOneDrivePath();
+        if (!onedrivePath) {
+            throw new Error('OneDrive path not set');
         }
         
-        const csvText = await response.text();
-        const tasks = parseCSV(csvText);
+        // Create file input element
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv';
         
-        // Reset all tasks
-        Object.values(staffData).forEach(staff => staff.tasks = []);
+        // Show file selection dialog
+        input.click();
         
-        // Populate tasks
-        tasks.forEach(task => {
-            if (staffData[task.staff]) {
-                staffData[task.staff].tasks.push({
-                    id: parseInt(task.taskId),
-                    text: task.taskText,
-                    description: task.taskDescription,
-                    completed: task.completed === 'true',
-                    remarks: task.remarks
+        // Handle file selection
+        input.onchange = async function(e) {
+            try {
+                const file = e.target.files[0];
+                if (!file) {
+                    throw new Error('No file selected');
+                }
+                
+                const csvText = await file.text();
+                const tasks = parseCSV(csvText);
+                
+                // Reset all tasks
+                Object.values(staffData).forEach(staff => staff.tasks = []);
+                
+                // Populate tasks
+                tasks.forEach(task => {
+                    if (staffData[task.staff]) {
+                        staffData[task.staff].tasks.push({
+                            id: parseInt(task.taskId),
+                            text: task.taskText,
+                            description: task.taskDescription,
+                            completed: task.completed === 'true',
+                            remarks: task.remarks || ''
+                        });
+                    }
                 });
+                
+                // Save to localStorage as backup
+                localStorage.setItem('staffTasks', JSON.stringify(staffData));
+                
+                // Update display if a staff member is selected
+                const staffSelect = document.getElementById('staffSelect');
+                if (staffSelect.value) {
+                    displayTasks(staffSelect.value);
+                }
+                
+                // Show success message
+                const message = document.createElement('div');
+                message.style.position = 'fixed';
+                message.style.top = '10px';
+                message.style.left = '50%';
+                message.style.transform = 'translateX(-50%)';
+                message.style.backgroundColor = '#4CAF50';
+                message.style.color = 'white';
+                message.style.padding = '15px';
+                message.style.borderRadius = '5px';
+                message.style.zIndex = '1000';
+                message.textContent = 'Tasks loaded successfully!';
+                
+                document.body.appendChild(message);
+                setTimeout(() => message.remove(), 3000);
+            } catch (error) {
+                console.error('Error processing file:', error);
+                alert('Error loading tasks. Please try again.');
             }
-        });
-        
-        // Save to localStorage as backup
-        localStorage.setItem('staffTasks', JSON.stringify(staffData));
-        
-        // Update display if a staff member is selected
-        const staffSelect = document.getElementById('staffSelect');
-        if (staffSelect.value) {
-            displayTasks(staffSelect.value);
-        }
+        };
     } catch (error) {
         console.error('Error loading tasks:', error);
         
@@ -197,7 +253,7 @@ async function toggleTask(staffName, taskId) {
     const task = staffData[staffName].tasks.find(t => t.id === taskId);
     if (task) {
         task.completed = !task.completed;
-        await saveTasksToCSV();
+        saveTasksToCSV();
         displayTasks(staffName);
     }
 }
@@ -207,9 +263,26 @@ async function updateRemarks(staffName, taskId, remarks) {
     const task = staffData[staffName].tasks.find(t => t.id === taskId);
     if (task) {
         task.remarks = remarks;
-        await saveTasksToCSV();
+        saveTasksToCSV();
     }
 }
+
+// Add a button to change OneDrive path
+function addChangePathButton() {
+    const button = document.createElement('button');
+    button.textContent = 'Change OneDrive Path';
+    button.style.position = 'fixed';
+    button.style.bottom = '10px';
+    button.style.right = '10px';
+    button.onclick = function() {
+        localStorage.removeItem('onedrivePath');
+        getOneDrivePath();
+    };
+    document.body.appendChild(button);
+}
+
+// Call this when the page loads
+window.addEventListener('load', addChangePathButton);
 
 // Initialize token input when page loads
 document.addEventListener('DOMContentLoaded', () => {
