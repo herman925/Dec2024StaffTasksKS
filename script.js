@@ -264,12 +264,13 @@ function showOneDrivePathDialog() {
                 margin-top: 5px;
             }
             .browse-button {
-                margin-left: 10px;
                 padding: 8px 16px;
                 background-color: #f5f5f5;
                 border: 1px solid #ccc;
                 border-radius: 4px;
                 cursor: pointer;
+                margin-top: 10px;
+                width: 100%;
             }
             .browse-button:hover {
                 background-color: #e5e5e5;
@@ -278,6 +279,61 @@ function showOneDrivePathDialog() {
                 display: flex;
                 align-items: center;
                 margin-bottom: 10px;
+            }
+            .hidden {
+                display: none !important;
+            }
+            .path-preview-container {
+                display: none;
+                margin-top: 15px;
+            }
+            .path-preview-container.visible {
+                display: block;
+            }
+            .path-preview-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin: 5px 0;
+            }
+            .copy-icon {
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 4px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+            }
+            .copy-icon:hover {
+                background-color: #e5e5e5;
+            }
+            .copy-icon svg {
+                width: 16px;
+                height: 16px;
+                fill: #666;
+            }
+            .copy-icon.copied svg {
+                fill: #4CAF50;
+            }
+            .copy-icon::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                bottom: 100%;
+                right: 0;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                white-space: nowrap;
+                visibility: hidden;
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+            .copy-icon:hover::after {
+                visibility: visible;
+                opacity: 1;
             }
         `;
         document.head.appendChild(style);
@@ -288,7 +344,7 @@ function showOneDrivePathDialog() {
     modal.innerHTML = `
         <div class="onedrive-modal-content">
             <h2 style="margin-top: 0;">Select OneDrive Path</h2>
-            <p>Please select your OneDrive path or browse for the tasks.json file:</p>
+            <p>Please select your OneDrive path:</p>
             
             <div style="margin: 20px 0;">
                 <div class="path-input-container">
@@ -299,7 +355,6 @@ function showOneDrivePathDialog() {
                         <option value="E:">E: Drive</option>
                     </select>
                     <input type="file" id="folderInput" accept=".json" style="display: none;">
-                    <button class="browse-button" onclick="document.getElementById('folderInput').click()">Browse...</button>
                 </div>
                 
                 <div id="emailInputContainer" class="email-input-container">
@@ -307,15 +362,23 @@ function showOneDrivePathDialog() {
                     <input type="text" id="staffEmail" placeholder="e.g., hkkchan" />
                 </div>
 
-                <div style="margin-top: 15px;">
-                    <p style="margin: 5px 0;">Path preview:</p>
+                <div id="pathPreviewContainer" class="path-preview-container">
+                    <div class="path-preview-header">
+                        <p style="margin: 0;">Path preview:</p>
+                        <div class="copy-icon" onclick="copyPathToClipboard(this)" data-tooltip="Copy path">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                            </svg>
+                        </div>
+                    </div>
                     <div id="pathPreview" style="word-break: break-all; padding: 10px; background: #f5f5f5; border-radius: 4px;"></div>
+                    <button class="browse-button hidden" onclick="document.getElementById('folderInput').click()">Browse...</button>
                 </div>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
                 <button onclick="this.closest('.onedrive-modal').remove()">Cancel</button>
-                <button onclick="saveOneDrivePath(this)">Load File</button>
+                <button id="loadFileBtn" class="hidden" onclick="saveOneDrivePath(this)">Load File</button>
             </div>
         </div>
     `;
@@ -325,7 +388,42 @@ function showOneDrivePathDialog() {
     const pathInput = modal.querySelector('#pathInput');
     const emailInputContainer = modal.querySelector('#emailInputContainer');
     const staffEmailInput = modal.querySelector('#staffEmail');
+    const pathPreviewContainer = modal.querySelector('#pathPreviewContainer');
     const pathPreview = modal.querySelector('#pathPreview');
+    const browseButton = modal.querySelector('.browse-button');
+    const loadFileBtn = modal.querySelector('#loadFileBtn');
+
+    function updateUIState() {
+        const selectedPath = pathInput.value;
+        const staffEmail = staffEmailInput.value.trim();
+
+        // Reset UI elements
+        emailInputContainer.classList.remove('visible');
+        pathPreviewContainer.classList.remove('visible');
+        browseButton.classList.add('hidden');
+        loadFileBtn.classList.add('hidden');
+
+        if (!selectedPath) {
+            return;
+        }
+
+        if (selectedPath === 'C:') {
+            // Show email input for C: drive
+            emailInputContainer.classList.add('visible');
+            
+            // Only show path preview and browse button if email is provided
+            if (staffEmail) {
+                pathPreviewContainer.classList.add('visible');
+                browseButton.classList.remove('hidden');
+                loadFileBtn.classList.remove('hidden');
+            }
+        } else if (selectedPath === 'D:' || selectedPath === 'E:') {
+            // Show path preview and browse button immediately for D: and E: drives
+            pathPreviewContainer.classList.add('visible');
+            browseButton.classList.remove('hidden');
+            loadFileBtn.classList.remove('hidden');
+        }
+    }
 
     function updatePathPreview() {
         const basePath = pathInput.value;
@@ -342,11 +440,9 @@ function showOneDrivePathDialog() {
                     '\\Dec 2024 Pre-Christmas Tasks' +
                     '\\tasks.json';
             } else {
-                fullPath = 'Please enter your username above';
+                fullPath = 'Please enter your staff email';
             }
-            emailInputContainer.classList.add('visible');
         } else {
-            emailInputContainer.classList.remove('visible');
             fullPath = basePath ? 
                 basePath + 
                 '\\The Education University of Hong Kong' +
@@ -357,6 +453,7 @@ function showOneDrivePathDialog() {
                 '\\tasks.json' : '';
         }
         pathPreview.textContent = fullPath;
+        updateUIState();
     }
 
     pathInput.addEventListener('input', updatePathPreview);
@@ -400,6 +497,25 @@ function showOneDrivePathDialog() {
             // Trigger the path preview update
             select.dispatchEvent(new Event('input'));
         }
+    });
+}
+
+// Function to copy path to clipboard
+function copyPathToClipboard(icon) {
+    const pathText = document.getElementById('pathPreview').textContent;
+    navigator.clipboard.writeText(pathText).then(() => {
+        icon.classList.add('copied');
+        icon.setAttribute('data-tooltip', 'Copied!');
+        setTimeout(() => {
+            icon.classList.remove('copied');
+            icon.setAttribute('data-tooltip', 'Copy path');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy path:', err);
+        icon.setAttribute('data-tooltip', 'Failed to copy');
+        setTimeout(() => {
+            icon.setAttribute('data-tooltip', 'Copy path');
+        }, 2000);
     });
 }
 
