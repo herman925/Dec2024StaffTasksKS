@@ -3,6 +3,12 @@ let staffData = {};
 
 // Function to load tasks from JSON
 async function loadTasksFromJSON() {
+    const onedrivePath = getOneDrivePath();
+    if (!onedrivePath) {
+        showOneDrivePathDialog();
+        return Promise.resolve(); // Silently resolve
+    }
+
     try {
         const response = await fetch('tasks.json');
         if (!response.ok) {
@@ -29,26 +35,6 @@ async function loadTasksFromJSON() {
         console.error('Error loading tasks:', error);
         showLoadingMessage('Error loading tasks. Please try again.', true);
         showPointingArrow();
-    }
-}
-
-// Function to save tasks to JSON
-async function saveTasksToJSON() {
-    try {
-        const response = await fetch('tasks.json', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ staff: staffData }, null, 2)
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return true;
-    } catch (error) {
-        console.error('Error saving tasks:', error);
-        return false;
     }
 }
 
@@ -121,6 +107,36 @@ function displayTasks(staffName = '') {
     }
 }
 
+// Function to toggle task details
+function toggleTaskDetails(taskElement) {
+    const details = taskElement.querySelector('.task-details');
+    const expandIcon = taskElement.querySelector('.expand-icon');
+    if (details && expandIcon) {
+        details.classList.toggle('hidden');
+        expandIcon.style.transform = details.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+}
+
+// Function to save tasks to JSON
+async function saveTasksToJSON() {
+    try {
+        const response = await fetch('tasks.json', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ staff: staffData }, null, 2)
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return true;
+    } catch (error) {
+        console.error('Error saving tasks:', error);
+        return false;
+    }
+}
+
 // Function to toggle task completion
 function toggleTask(staffName, taskId) {
     const task = staffData[staffName].tasks.find(t => t.id === taskId);
@@ -136,17 +152,6 @@ function updateRemarks(staffName, taskId, remarks) {
     if (task) {
         task.remarks = remarks;
         saveTasksToJSON();
-    }
-}
-
-// Function to toggle task details
-function toggleTaskDetails(taskElement) {
-    const details = taskElement.querySelector('.task-details');
-    const expandIcon = taskElement.querySelector('.expand-icon');
-    if (details && expandIcon) {
-        details.classList.toggle('hidden');
-        // Rotate the arrow when expanded
-        expandIcon.style.transform = details.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
     }
 }
 
@@ -467,7 +472,6 @@ function showOneDrivePathDialog() {
             // Get the path from the selected file
             const filePath = this.files[0].path;
             if (!filePath) {
-                showLoadingMessage('Unable to get file path. Please select a drive from the dropdown.', true);
                 return;
             }
 
@@ -815,42 +819,39 @@ function showTaskModal(staffName, taskId) {
     icon.className = `fas ${randomIcon} task-icon`;
 
     title.textContent = `${task.id}. ${task.text}`;
-    description.innerHTML = task.description.replace(/\n/g, '<br>');
+    description.textContent = task.description || 'No description available.';
     remarks.value = task.remarks || '';
 
-    modal.classList.add('show');
+    modal.style.display = 'block';
+    modal.classList.remove('hidden');
     remarks.focus();
 }
 
 function saveTaskRemarks() {
     if (!currentTaskData) return;
     
-    const remarks = document.querySelector('#taskModal .remarks-text').value;
-    handleRemarksChange(currentTaskData.staffName, currentTaskData.taskId, remarks);
+    const { staffName, taskId } = currentTaskData;
+    const remarks = document.querySelector('.remarks-text').value;
     
-    // Show save confirmation
-    const saveButton = document.querySelector('#taskModal .save-button');
-    const originalText = saveButton.innerHTML;
-    saveButton.innerHTML = '<i class="fas fa-check"></i> Saved!';
-    saveButton.classList.add('saved');
-    
-    setTimeout(() => {
-        saveButton.innerHTML = originalText;
-        saveButton.classList.remove('saved');
-    }, 2000);
+    updateTask(staffName, taskId, { remarks });
+    closeTaskModal();
 }
 
 function closeTaskModal() {
     const modal = document.getElementById('taskModal');
-    modal.classList.remove('show');
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
     currentTaskData = null;
 }
 
 // Close modal when clicking outside
-document.getElementById('taskModal').addEventListener('click', function(event) {
-    if (event.target === this) {
-        closeTaskModal();
-    }
+window.addEventListener('load', function() {
+    const modal = document.getElementById('taskModal');
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            closeTaskModal();
+        }
+    });
 });
 
 // Add task modal to the page
