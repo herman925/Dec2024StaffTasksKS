@@ -53,12 +53,29 @@ function generateCSVContent() {
 function getOneDrivePath() {
     let path = localStorage.getItem('onedrivePath');
     if (!path) {
-        path = prompt('Please enter your OneDrive path to the tasks folder (e.g., C:\\Users\\YourName\\OneDrive\\The Education University of Hong Kong\\o365grp_KeySteps@JC - General\\00 - Project Admin\\Summary of Team Task\\Dec 2024 Pre-Christmas Tasks):', '');
+        // Common OneDrive paths
+        const commonPaths = [
+            'C:\\Users\\' + (process.env.USERNAME || '') + '\\OneDrive',
+            'C:\\Users\\' + (process.env.USERNAME || '') + '\\OneDrive - The Education University of Hong Kong',
+            'D:\\OneDrive',
+            'D:\\OneDrive - The Education University of Hong Kong',
+            'E:\\OneDrive',
+            'E:\\OneDrive - The Education University of Hong Kong'
+        ];
+
+        path = prompt(
+            'Please enter your OneDrive root folder path. Common paths are:\n' + 
+            commonPaths.join('\n') + 
+            '\n\nThe rest of the path will be automatically appended:\n' +
+            '\\The Education University of Hong Kong\\o365grp_KeySteps@JC - General\\00 - Project Admin\\Summary of Team Task\\Dec 2024 Pre-Christmas Tasks',
+            commonPaths[0]
+        );
+
         if (path) {
             localStorage.setItem('onedrivePath', path);
         }
     }
-    return path;
+    return path ? path + '\\The Education University of Hong Kong\\o365grp_KeySteps@JC - General\\00 - Project Admin\\Summary of Team Task\\Dec 2024 Pre-Christmas Tasks' : null;
 }
 
 // Function to save tasks
@@ -70,12 +87,6 @@ async function saveTasksToCSV() {
         // Generate CSV content
         const csvContent = generateCSVContent();
         
-        // Get OneDrive path
-        const onedrivePath = getOneDrivePath();
-        if (!onedrivePath) {
-            throw new Error('OneDrive path not set');
-        }
-        
         // Create a temporary element to trigger file download
         const element = document.createElement('a');
         const file = new Blob([csvContent], {type: 'text/csv'});
@@ -85,7 +96,8 @@ async function saveTasksToCSV() {
         element.click();
         document.body.removeChild(element);
         
-        // Show success message
+        // Show success message with the full path
+        const onedrivePath = getOneDrivePath();
         const message = document.createElement('div');
         message.style.position = 'fixed';
         message.style.top = '10px';
@@ -96,7 +108,9 @@ async function saveTasksToCSV() {
         message.style.padding = '15px';
         message.style.borderRadius = '5px';
         message.style.zIndex = '1000';
-        message.textContent = 'Please save the file to your OneDrive folder as tasks.csv';
+        message.style.maxWidth = '80%';
+        message.style.wordWrap = 'break-word';
+        message.innerHTML = `Please save as:<br>${onedrivePath}\\tasks.csv`;
         
         document.body.appendChild(message);
         setTimeout(() => message.remove(), 5000);
@@ -274,9 +288,19 @@ function addChangePathButton() {
     button.style.position = 'fixed';
     button.style.bottom = '10px';
     button.style.right = '10px';
+    button.style.padding = '10px';
+    button.style.backgroundColor = '#f0f0f0';
+    button.style.border = '1px solid #ccc';
+    button.style.borderRadius = '5px';
+    button.style.cursor = 'pointer';
     button.onclick = function() {
-        localStorage.removeItem('onedrivePath');
-        getOneDrivePath();
+        if (confirm('Do you want to change your OneDrive path?')) {
+            localStorage.removeItem('onedrivePath');
+            const newPath = getOneDrivePath();
+            if (newPath) {
+                alert('OneDrive path updated. New path:\n' + newPath);
+            }
+        }
     };
     document.body.appendChild(button);
 }
