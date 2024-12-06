@@ -1,202 +1,336 @@
-// Staff data structure with positions
-const staffData = {
-    'Herman': { position: 'SRA', tasks: [] },
-    'Alvin': { position: 'PA', tasks: [] },
-    'Vicky': { position: 'RA', tasks: [] },
-    'Echo': { position: 'SRA', tasks: [] },
-    'Dickson': { position: 'SRA', tasks: [] },
-    'Vincent': { position: 'PA', tasks: [] },
-    'Archie': { position: 'RA', tasks: [] },
-    'Jady': { position: 'RA', tasks: [] },
-    'Kaka': { position: 'RA', tasks: [] },
-    'Jane': { position: 'RA', tasks: [] },
-    'Cathy': { position: 'RA', tasks: [] }
-};
+// Staff data structure
+let staffData = {};
 
-// Function to parse CSV data
-function parseCSV(csvText) {
+// Function to load tasks from JSON
+async function loadTasksFromJSON() {
     try {
-        // Split into lines and remove any empty lines
-        const lines = csvText.split(/\r?\n/).filter(line => line.trim());
-        if (lines.length === 0) {
-            throw new Error('CSV file is empty');
+        const response = await fetch('tasks.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        // Parse headers
-        const headers = lines[0].split(',').map(h => h.trim());
-        const requiredHeaders = ['staff', 'position', 'taskId', 'taskText', 'taskDescription', 'completed', 'remarks'];
-        const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
-        if (missingHeaders.length > 0) {
-            throw new Error(`Missing required headers: ${missingHeaders.join(', ')}`);
+        const data = await response.json();
+        staffData = data.staff;
+        
+        if (hasNoTasks()) {
+            showPointingArrow();
+        } else {
+            removePointingArrow();
         }
-
-        // Parse data rows
-        return lines.slice(1).filter(line => line.trim()).map((line, index) => {
-            const values = [];
-            let inQuotes = false;
-            let currentValue = '';
-            
-            // Parse CSV considering quotes
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    values.push(currentValue.trim());
-                    currentValue = '';
-                } else {
-                    currentValue += char;
-                }
-            }
-            values.push(currentValue.trim()); // Push the last value
-
-            const entry = {};
-            headers.forEach((header, i) => {
-                let value = values[i] || '';
-                // Remove quotes if present
-                value = value.replace(/^"(.*)"$/, '$1').trim();
-                
-                // Convert values based on type
-                if (header === 'completed') {
-                    entry[header] = value.toLowerCase() === 'true';
-                } else if (header === 'taskId') {
-                    entry[header] = parseInt(value) || value;
-                } else {
-                    entry[header] = value;
-                }
-            });
-
-            return entry;
-        });
+        
+        displayTasks(document.getElementById('staffSelect').value);
+        showLoadingMessage('Tasks loaded successfully!');
+        
+        // Close the load dialog if it exists
+        const loadDialog = document.querySelector('.modal');
+        if (loadDialog) {
+            loadDialog.style.display = 'none';
+        }
     } catch (error) {
-        console.error('Error parsing CSV:', error);
-        throw error;
+        console.error('Error loading tasks:', error);
+        showLoadingMessage('Error loading tasks. Please try again.', true);
+        showPointingArrow();
+    }
+}
+
+// Function to save tasks to JSON
+async function saveTasksToJSON() {
+    try {
+        const response = await fetch('tasks.json', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ staff: staffData }, null, 2)
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return true;
+    } catch (error) {
+        console.error('Error saving tasks:', error);
+        return false;
+    }
+}
+
+// Function to display tasks for selected staff member
+function displayTasks(staffName = '') {
+    const tasksListElement = document.getElementById('tasksList');
+    tasksListElement.innerHTML = '';
+
+    // Show message when no staff is selected (check this first)
+    if (!staffName || staffName === 'Select a staff member') {
+        removePointingArrow();
+        tasksListElement.innerHTML = `
+            <div class="no-tasks-message select-staff-message">
+                <i class="fas fa-user-friends"></i>
+                <h2>Select a Staff Member</h2>
+                <p>Choose a staff member from the dropdown above to view their tasks!</p>
+                <i class="fas fa-candy-cane"></i>
+            </div>
+        `;
+        return;
+    }
+
+    // Then check for no tasks
+    if (hasNoTasks()) {
+        showPointingArrow();
+        tasksListElement.innerHTML = `
+            <div class="no-tasks-message">
+                <i class="fas fa-snowflake"></i>
+                <h2>No Tasks Found</h2>
+                <p>Click the "Load File from OneDrive" button to get started!</p>
+                <i class="fas fa-snowflake"></i>
+            </div>
+        `;
+        return;
+    } else {
+        removePointingArrow();
+    }
+
+    if (staffData[staffName]) {
+        staffData[staffName].tasks.forEach(task => {
+            const taskElement = document.createElement('div');
+            taskElement.className = 'task-item';
+            
+            // Choose a random Christmas icon for each task
+            const christmasIcons = ['fa-gift', 'fa-star', 'fa-snowflake', 'fa-candy-cane', 'fa-tree'];
+            const randomIcon = christmasIcons[Math.floor(Math.random() * christmasIcons.length)];
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = task.completed;
+            checkbox.className = 'task-checkbox';
+            checkbox.onclick = (e) => {
+                e.stopPropagation();
+                handleCheckboxChange(staffName, task.id, checkbox.checked);
+            };
+
+            taskElement.innerHTML = `
+                <div class="task-header" onclick="showTaskModal('${staffName}', ${task.id})">
+                    <i class="fas ${randomIcon} task-icon"></i>
+                    <div class="task-title">
+                        ${task.id}. ${task.text}
+                    </div>
+                </div>
+            `;
+
+            // Insert checkbox at the beginning
+            taskElement.insertBefore(checkbox, taskElement.firstChild);
+            tasksListElement.appendChild(taskElement);
+        });
+    }
+}
+
+// Function to toggle task completion
+function toggleTask(staffName, taskId) {
+    const task = staffData[staffName].tasks.find(t => t.id === taskId);
+    if (task) {
+        task.completed = !task.completed;
+        saveTasksToJSON();
+    }
+}
+
+// Function to update remarks
+function updateRemarks(staffName, taskId, remarks) {
+    const task = staffData[staffName].tasks.find(t => t.id === taskId);
+    if (task) {
+        task.remarks = remarks;
+        saveTasksToJSON();
     }
 }
 
 // Function to toggle task details
 function toggleTaskDetails(taskElement) {
-    taskElement.classList.toggle('expanded');
+    const details = taskElement.querySelector('.task-details');
+    const expandIcon = taskElement.querySelector('.expand-icon');
+    if (details && expandIcon) {
+        details.classList.toggle('hidden');
+        // Rotate the arrow when expanded
+        expandIcon.style.transform = details.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
 }
 
-// Function to generate CSV content
-function generateCSVContent() {
-    let csvContent = "staff,position,taskId,taskText,taskDescription,completed,remarks\n";
-    Object.entries(staffData).forEach(([staff, data]) => {
-        data.tasks.forEach(task => {
-            // Properly escape fields that might contain commas or quotes
-            const escapedText = task.text.includes(',') ? `"${task.text}"` : task.text;
-            const escapedDesc = task.description.includes(',') ? `"${task.description}"` : task.description;
-            const escapedRemarks = task.remarks.includes(',') ? `"${task.remarks}"` : task.remarks;
-            
-            csvContent += `${staff},${data.position},${task.id},${escapedText},${escapedDesc},${task.completed},${escapedRemarks}\n`;
-        });
-    });
-    return csvContent;
+// Function to check if there are any tasks
+function hasNoTasks() {
+    if (!staffData) return true;
+    return Object.values(staffData).every(staff => !staff.tasks || staff.tasks.length === 0);
 }
+
+// Function to show pointing arrow and message
+function showPointingArrow() {
+    removePointingArrow(); // Remove any existing arrows first
+    
+    // Create arrow container for better positioning
+    const arrowContainer = document.createElement('div');
+    arrowContainer.className = 'pointing-arrow';
+    
+    // Create arrow using Font Awesome icon
+    const arrow = document.createElement('i');
+    arrow.className = 'fas fa-candy-cane';
+    arrowContainer.appendChild(arrow);
+
+    // Create message
+    const message = document.createElement('div');
+    message.className = 'initial-message';
+    message.innerHTML = '<i class="fas fa-gift"></i> Click here to load your tasks! <i class="fas fa-gift"></i>';
+    
+    document.body.appendChild(arrowContainer);
+    document.body.appendChild(message);
+}
+
+// Function to remove pointing arrow and message
+function removePointingArrow() {
+    const arrow = document.querySelector('.pointing-arrow');
+    const message = document.querySelector('.initial-message');
+    if (arrow) arrow.remove();
+    if (message) message.remove();
+}
+
+// Event listener for when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check if tasks are loaded
+    try {
+        await loadTasksFromJSON();
+    } catch (error) {
+        // If tasks aren't loaded, show the pointing arrow
+        showPointingArrow();
+    }
+    
+    // Add event listener for staff selection changes
+    document.getElementById('staffSelect').addEventListener('change', function(e) {
+        displayTasks(e.target.value);
+    });
+    
+    displayTasks(); // Add this line to show the initial message
+});
 
 // Function to show OneDrive path dialog
 function showOneDrivePathDialog() {
     // Add modal styles if they don't exist
-    if (!document.getElementById('modalStyles')) {
+    if (!document.getElementById('oneDriveModalStyles')) {
         const style = document.createElement('style');
-        style.id = 'modalStyles';
+        style.id = 'oneDriveModalStyles';
         style.textContent = `
-            .modal {
+            .onedrive-modal {
                 position: fixed;
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(5px);
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 z-index: 1000;
             }
-            .modal-content {
+            .onedrive-modal-content {
                 background: white;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
                 max-width: 600px;
                 width: 90%;
+                border: 3px solid #1a472a;
             }
-            .modal button {
-                padding: 8px 16px;
-                border-radius: 4px;
+            .onedrive-modal button {
+                padding: 12px 24px;
+                border-radius: 8px;
                 cursor: pointer;
-                border: 1px solid #ccc;
-            }
-            .modal button:last-child {
-                background-color: #4CAF50;
-                color: white;
                 border: none;
+                font-size: 1em;
+                transition: all 0.2s ease;
             }
-            .modal input {
+            .onedrive-modal button:last-child {
+                background-color: #1a472a;
+                color: white;
+            }
+            .onedrive-modal button:last-child:hover {
+                background-color: #2d5a40;
+                transform: translateY(-1px);
+            }
+            .onedrive-modal button:first-child {
+                background-color: #f5f5f5;
+                color: #333;
+                margin-right: 10px;
+            }
+            .onedrive-modal button:first-child:hover {
+                background-color: #e5e5e5;
+            }
+            .onedrive-modal input {
                 width: 100%;
-                padding: 8px;
+                padding: 12px;
                 margin-bottom: 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
+                border: 1px solid rgba(26, 71, 42, 0.2);
+                border-radius: 8px;
                 box-sizing: border-box;
                 font-family: monospace;
+                font-size: 0.95em;
+                transition: all 0.2s ease;
             }
-            .modal label {
+            .onedrive-modal input:focus {
+                outline: none;
+                border-color: #1a472a;
+                box-shadow: 0 0 0 2px rgba(26, 71, 42, 0.1);
+            }
+            .onedrive-modal label {
                 display: block;
-                margin-bottom: 5px;
-                color: #333;
-                font-weight: 500;
+                margin-bottom: 8px;
+                color: #1a472a;
+                font-weight: 600;
+                font-size: 1.1em;
             }
-            .modal small {
+            .onedrive-modal small {
                 color: #666;
                 display: block;
                 margin-bottom: 15px;
+                font-size: 0.9em;
             }
-            .modal h2 {
+            .onedrive-modal h2 {
                 margin-top: 0;
-                margin-bottom: 20px;
-                color: #333;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 10px;
+                margin-bottom: 25px;
+                color: #1a472a;
+                border-bottom: 1px solid rgba(26, 71, 42, 0.1);
+                padding-bottom: 15px;
+                font-size: 1.6em;
             }
-            .modal .path-preview {
-                background: #f5f5f5;
-                padding: 15px;
-                border-radius: 4px;
+            .onedrive-modal .path-preview {
+                background: rgba(26, 71, 42, 0.05);
+                padding: 20px;
+                border-radius: 12px;
                 margin: 15px 0;
-                font-family: monospace;
-                font-size: 13px;
-                line-height: 1.4;
+                border: 1px solid rgba(26, 71, 42, 0.1);
             }
-            .modal .path-preview-label {
+            .onedrive-modal .path-preview-label {
                 display: block;
-                color: #666;
-                margin-bottom: 8px;
-                font-weight: 500;
-                font-family: system-ui, -apple-system, sans-serif;
-                font-size: 14px;
+                color: #1a472a;
+                margin-bottom: 12px;
+                font-weight: 600;
+                font-size: 1em;
             }
-            .modal .path-preview-content {
+            .onedrive-modal .path-preview-content {
                 white-space: pre-wrap;
                 word-break: break-all;
                 color: #333;
+                font-family: monospace;
+                font-size: 0.95em;
+                line-height: 1.6;
             }
-            .modal .section {
-                margin-bottom: 20px;
-                padding-bottom: 20px;
-                border-bottom: 1px solid #eee;
+            .onedrive-modal .section {
+                margin-bottom: 25px;
+                padding-bottom: 25px;
+                border-bottom: 1px solid rgba(26, 71, 42, 0.1);
             }
-            .modal .section:last-child {
+            .onedrive-modal .section:last-child {
                 border-bottom: none;
                 margin-bottom: 0;
                 padding-bottom: 0;
             }
-            .modal .button-group {
+            .onedrive-modal .button-group {
                 display: flex;
                 justify-content: flex-end;
                 gap: 10px;
-                margin-top: 20px;
+                margin-top: 25px;
             }
         `;
         document.head.appendChild(style);
@@ -222,9 +356,9 @@ function showOneDrivePathDialog() {
     ];
 
     const dialog = document.createElement('div');
-    dialog.className = 'modal';
+    dialog.className = 'onedrive-modal';
     dialog.innerHTML = `
-        <div class="modal-content">
+        <div class="onedrive-modal-content">
             <h2>Select OneDrive Path and Tasks File</h2>
             <div class="section">
                 <label for="pathInput">Choose or Type Drive:</label>
@@ -245,12 +379,12 @@ function showOneDrivePathDialog() {
                 </div>
             </div>
             <div class="section">
-                <label for="taskFileInput">Select Tasks CSV File:</label>
-                <input type="file" id="taskFileInput" accept=".csv">
-                <small>Please select your tasks.csv file</small>
+                <label for="taskFileInput">Select Tasks JSON File:</label>
+                <input type="file" id="taskFileInput" accept=".json">
+                <small>Please select your tasks.json file</small>
             </div>
             <div class="button-group">
-                <button onclick="this.closest('.modal').remove()">Cancel</button>
+                <button onclick="this.closest('.onedrive-modal').remove()">Cancel</button>
                 <button onclick="saveOneDrivePath(this)">OK</button>
             </div>
         </div>
@@ -271,7 +405,7 @@ function showOneDrivePathDialog() {
             '\\00 - Project Admin' +
             '\\Summary of Team Task' +
             '\\Dec 2024 Pre-Christmas Tasks' +
-            '\\tasks.csv' : '';
+            '\\tasks.json' : '';
         pathPreview.textContent = fullPath;
     }
 
@@ -281,7 +415,7 @@ function showOneDrivePathDialog() {
 
 // Function to save OneDrive path and load tasks
 async function saveOneDrivePath(button) {
-    const dialog = button.closest('.modal');
+    const dialog = button.closest('.onedrive-modal');
     const pathInput = dialog.querySelector('#pathInput');
     const fileInput = dialog.querySelector('#taskFileInput');
     
@@ -292,94 +426,53 @@ async function saveOneDrivePath(button) {
             throw new Error('Please select or enter a OneDrive path');
         }
 
-        // Check if a file was selected
-        if (!fileInput.files || fileInput.files.length === 0) {
-            throw new Error('Please select a tasks.csv file');
-        }
+        // Construct full path
+        const fullPath = selectedPath + 
+            '\\The Education University of Hong Kong' +
+            '\\o365grp_KeySteps@JC - General' +
+            '\\00 - Project Admin' +
+            '\\Summary of Team Task' +
+            '\\Dec 2024 Pre-Christmas Tasks' +
+            '\\tasks.json';
 
         // Save path to localStorage
-        localStorage.setItem('onedrivePath', selectedPath);
-        
-        // Remove dialog
-        dialog.remove();
+        localStorage.setItem('onedrivePath', fullPath);
 
-        // Show loading message
-        const loadingMessage = document.createElement('div');
-        loadingMessage.style.cssText = `
-            position: fixed;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2196F3;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            z-index: 1000;
-            text-align: center;
-            max-width: 80%;
-            word-wrap: break-word;
-        `;
-        loadingMessage.textContent = 'Reading tasks file...';
-        document.body.appendChild(loadingMessage);
-
-        try {
-            // Read and parse the CSV file
+        // If a file was selected, read and use its content
+        if (fileInput.files.length > 0) {
             const file = fileInput.files[0];
-            const csvText = await file.text();
-            const tasks = parseCSV(csvText);
-
-            if (tasks.length === 0) {
-                throw new Error('No tasks found in CSV file');
-            }
-
-            // Reset existing tasks
-            Object.values(staffData).forEach(staff => staff.tasks = []);
-
-            // Populate tasks
-            let taskCount = 0;
-            tasks.forEach(task => {
-                if (staffData[task.staff]) {
-                    staffData[task.staff].tasks.push({
-                        id: task.taskId,
-                        text: task.taskText,
-                        description: task.taskDescription || '',
-                        completed: task.completed,
-                        remarks: task.remarks || ''
-                    });
-                    taskCount++;
-                } else {
-                    console.warn(`Warning: Staff member "${task.staff}" not found in staffData`);
+            const reader = new FileReader();
+            
+            reader.onload = async function(e) {
+                try {
+                    const content = JSON.parse(e.target.result);
+                    staffData = content.staff || {};
+                    await saveTasksToJSON();
+                    showLoadingMessage('Tasks loaded successfully!');
+                    displayTasks(document.getElementById('staffSelect').value);
+                    dialog.remove();
+                } catch (error) {
+                    showLoadingMessage('Error parsing JSON file. Please check the file format.', true);
                 }
-            });
-
-            // Save to localStorage
-            localStorage.setItem('staffTasks', JSON.stringify(staffData));
-
-            // Update display
-            const staffSelect = document.getElementById('staffSelect');
-            if (staffSelect.value) {
-                displayTasks(staffSelect.value);
+            };
+            
+            reader.readAsText(file);
+        } else {
+            // No file selected, try to load from saved path
+            try {
+                await loadTasksFromJSON();
+                dialog.remove();
+            } catch (error) {
+                showLoadingMessage('Error loading tasks. Please check the file path or select a file.', true);
             }
-
-            // Show success message
-            loadingMessage.style.backgroundColor = '#4CAF50';
-            loadingMessage.innerHTML = `Successfully loaded ${taskCount} tasks from ${file.name}`;
-            setTimeout(() => loadingMessage.remove(), 3000);
-
-        } catch (error) {
-            console.error('Error processing tasks:', error);
-            loadingMessage.style.backgroundColor = '#f44336';
-            loadingMessage.innerHTML = `Error: ${error.message}`;
-            setTimeout(() => loadingMessage.remove(), 5000);
         }
-
     } catch (error) {
-        alert(error.message);
+        showLoadingMessage(error.message, true);
     }
 }
 
-// Function to load tasks from CSV
-async function loadTasksFromCSV() {
+// Function to load tasks from JSON
+async function loadTasksFromJSON() {
     const onedrivePath = getOneDrivePath();
     if (!onedrivePath) {
         showOneDrivePathDialog();
@@ -387,7 +480,7 @@ async function loadTasksFromCSV() {
     }
 
     // If path exists, show dialog with file input
-    showOneDrivePathDialog();
+    // showOneDrivePathDialog();
 }
 
 // Function to get OneDrive path
@@ -409,7 +502,7 @@ function showSaveConfirmation() {
             <p>Do you want to save your changes to the tasks file?</p>
             <div class="button-group">
                 <button onclick="this.closest('.modal').remove()">Cancel</button>
-                <button onclick="saveTasksToCSV(true); this.closest('.modal').remove()">Save</button>
+                <button onclick="saveTasksToJSON(true); this.closest('.modal').remove()">Save</button>
             </div>
         </div>
     `;
@@ -417,13 +510,12 @@ function showSaveConfirmation() {
 }
 
 // Function to save tasks
-async function saveTasksToCSV(confirmed = false) {
+async function saveTasksToJSON(confirmed = false) {
     if (!confirmed) {
         showSaveConfirmation();
         return;
     }
 
-    const csvContent = generateCSVContent();
     const fullPath = getOneDrivePath();
     if (!fullPath) {
         alert('Please set up OneDrive path first');
@@ -431,188 +523,237 @@ async function saveTasksToCSV(confirmed = false) {
     }
 
     try {
-        // Show guidance message before file picker
-        const guidanceMsg = document.createElement('div');
-        guidanceMsg.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1001;
-            text-align: center;
-            max-width: 500px;
-        `;
-        guidanceMsg.innerHTML = `
-            <h3 style="margin-top: 0;">Save File Instructions</h3>
-            <p>It wll proceed to save to this location:</p>
-            <code style="background: #f5f5f5; padding: 5px; display: block; margin: 10px 0; word-break: break-all;">${fullPath}</code>
-            <button onclick="this.parentElement.remove(); initiateActualSave();" style="padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Continue to Save</button>
-        `;
-        document.body.appendChild(guidanceMsg);
+        // Create a Blob with UTF-8 encoding and BOM
+        const bom = new Uint8Array([0xEF, 0xBB, 0xBF]); // UTF-8 BOM
+        const jsonBlob = new Blob([bom, JSON.stringify({ staff: staffData }, null, 2)], { 
+            type: 'application/json;charset=utf-8'
+        });
 
-        // Define the actual save function
-        window.initiateActualSave = async () => {
-            try {
-                // Create file picker with simple options
-                const handle = await window.showSaveFilePicker({
-                    suggestedName: 'tasks.csv',
-                    types: [{
-                        description: 'CSV Files',
-                        accept: {
-                            'text/csv': ['.csv'],
-                        },
-                    }],
-                });
+        // Get the file handle using showSaveFilePicker
+        const handle = await window.showSaveFilePicker({
+            suggestedName: 'tasks.json',
+            types: [{
+                description: 'JSON Files',
+                accept: {
+                    'application/json': ['.json'],
+                },
+            }],
+            startIn: 'desktop',
+        });
 
-                // Write the content
-                const writable = await handle.createWritable();
-                await writable.write(csvContent);
-                await writable.close();
+        // Create a FileSystemWritableFileStream to write to
+        const writable = await handle.createWritable();
 
-                // Show success message
-                const successMsg = document.createElement('div');
-                successMsg.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    background-color: #4CAF50;
-                    color: white;
-                    padding: 15px;
-                    border-radius: 5px;
-                    z-index: 1000;
-                    opacity: 0;
-                    transition: opacity 0.3s;
-                `;
-                successMsg.textContent = 'Tasks saved successfully!';
-                document.body.appendChild(successMsg);
-                setTimeout(() => successMsg.style.opacity = '1', 0);
-                setTimeout(() => {
-                    successMsg.style.opacity = '0';
-                    setTimeout(() => successMsg.remove(), 300);
-                }, 3000);
+        // Write the content to the file
+        await writable.write(jsonBlob);
+        await writable.close();
 
-            } catch (err) {
-                if (err.name !== 'AbortError') {  // Don't show error if user just cancelled
-                    console.error('Error saving file:', err);
-                    alert('Error saving file: ' + err.message);
-                }
-            }
-        };
+        // Show success message
+        showLoadingMessage('Tasks saved successfully!');
 
-    } catch (error) {
-        console.error('Error in save process:', error);
-        alert('Error in save process: ' + error.message);
-    }
-}
-
-// Function to display tasks for selected staff member
-function displayTasks(staffName) {
-    const taskList = document.getElementById('taskList');
-    const staffInfo = document.getElementById('staffInfo');
-    taskList.innerHTML = '';
-    staffInfo.innerHTML = '';
-
-    if (!staffName || !staffData[staffName]) {
-        taskList.innerHTML = '<p>Please select a staff member</p>';
-        return;
-    }
-
-    // Display staff name and position
-    staffInfo.innerHTML = `
-        <div class="staff-name">${staffName}</div>
-        <div class="staff-position">${staffData[staffName].position}</div>
-    `;
-
-    staffData[staffName].tasks.forEach(task => {
-        const taskDiv = document.createElement('div');
-        taskDiv.className = `task-item ${task.completed ? 'completed' : ''}`;
-        taskDiv.innerHTML = `
-            <div class="task-header" onclick="toggleTaskDetails(this.parentElement)">
-                <input type="checkbox" class="task-checkbox" 
-                    ${task.completed ? 'checked' : ''} 
-                    onclick="event.stopPropagation()"
-                    onchange="toggleTask('${staffName}', ${task.id})">
-                <div class="task-content">
-                    <div class="task-title">
-                        ${task.text}
-                        <span class="expand-icon">▼</span>
-                    </div>
-                    <div class="task-details">
-                        <div class="task-description">${task.description}</div>
-                        <label class="remarks-label">Remarks:</label>
-                        <textarea class="remarks" placeholder="Add remarks here..."
-                            onclick="event.stopPropagation()"
-                            onchange="updateRemarks('${staffName}', ${task.id}, this.value)">${task.remarks}</textarea>
-                    </div>
-                </div>
-            </div>
-        `;
-        taskList.appendChild(taskDiv);
-    });
-}
-
-// Function to toggle task completion
-function toggleTask(staffName, taskId) {
-    const staff = staffData[staffName];
-    if (staff) {
-        const task = staff.tasks.find(t => t.id === taskId);
-        if (task) {
-            task.completed = !task.completed;
-            localStorage.setItem('staffTasks', JSON.stringify(staffData));
-            displayTasks(staffName);
-            saveTasksToCSV(); // Show save confirmation
+    } catch (err) {
+        if (err.name === 'AbortError') {
+            console.log('File save was cancelled');
+            return;
         }
+        console.error('Error saving file:', err);
+        showLoadingMessage('Error saving file: ' + err.message, true);
     }
 }
 
-// Function to update remarks
-function updateRemarks(staffName, taskId, remarks) {
-    const staff = staffData[staffName];
-    if (staff) {
-        const task = staff.tasks.find(t => t.id === taskId);
-        if (task) {
-            task.remarks = remarks;
-            localStorage.setItem('staffTasks', JSON.stringify(staffData));
-            saveTasksToCSV(); // Show save confirmation
-        }
-    }
-}
-
-// Add a button to change OneDrive path
+// Function to add change path button
 function addChangePathButton() {
+    const container = document.querySelector('.container');
     const button = document.createElement('button');
-    button.textContent = 'Change OneDrive Path';
+    button.textContent = 'Load File from OneDrive';
     button.style.cssText = `
         position: fixed;
-        bottom: 10px;
-        right: 10px;
-        padding: 10px;
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: #1a472a;
+        color: white;
+        border: none;
         border-radius: 5px;
         cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        z-index: 1000;
     `;
-    button.onclick = function() {
-        localStorage.removeItem('onedrivePath');
-        const modal = showOneDrivePathDialog();
-        document.body.appendChild(modal);
-    };
+    button.addEventListener('mouseover', () => {
+        button.style.backgroundColor = '#c41e3a';
+    });
+    button.addEventListener('mouseout', () => {
+        button.style.backgroundColor = '#1a472a';
+    });
+    button.onclick = showOneDrivePathDialog;
     document.body.appendChild(button);
+}
+
+// Create or update the persistent save notification
+function showPersistentSaveNotification() {
+    let notification = document.getElementById('saveNotification');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'saveNotification';
+        notification.className = 'persistent-notification';
+        
+        const message = document.createElement('span');
+        message.textContent = 'You have unsaved changes';
+        
+        const buttonGroup = document.createElement('div');
+        buttonGroup.className = 'notification-buttons';
+        
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Save Changes';
+        saveButton.onclick = async () => {
+            await saveTasksToJSON(true);
+            notification.remove();
+        };
+        
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = 'Discard';
+        cancelButton.onclick = () => {
+            loadTasksFromJSON(); // Reload original data
+            notification.remove();
+        };
+        
+        buttonGroup.appendChild(saveButton);
+        buttonGroup.appendChild(cancelButton);
+        
+        notification.appendChild(message);
+        notification.appendChild(buttonGroup);
+        document.body.appendChild(notification);
+    }
+}
+
+// Update task handling
+async function updateTask(staffName, taskId, updates) {
+    if (!staffData[staffName]) return;
+    
+    const task = staffData[staffName].tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    // Apply updates
+    Object.assign(task, updates);
+    
+    // Show persistent save notification instead of immediate popup
+    showPersistentSaveNotification();
+    
+    // Update display
+    displayTasks(staffName);
+}
+
+// Handle checkbox changes
+function handleCheckboxChange(staffName, taskId, checked) {
+    updateTask(staffName, taskId, { completed: checked });
+}
+
+// Handle remarks changes
+function handleRemarksChange(staffName, taskId, remarks) {
+    updateTask(staffName, taskId, { remarks: remarks });
 }
 
 // Call this when the page loads
 window.addEventListener('load', addChangePathButton);
 
-// Initialize token input when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    // Load tasks when the page loads
-    loadTasksFromCSV();
+// Function to show loading message
+function showLoadingMessage(message, error = false) {
+    const loadingMessage = document.createElement('div');
+    loadingMessage.style.cssText = `
+        position: fixed;
+        bottom: 10px;
+        right: 20px;
+        background: ${error ? '#f44336' : '#2196F3'};
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        z-index: 1000;
+        text-align: center;
+        max-width: 80%;
+        word-wrap: break-word;
+    `;
+    loadingMessage.textContent = message;
+    document.body.appendChild(loadingMessage);
+    setTimeout(() => loadingMessage.remove(), 3000);
+}
+
+// Modal functions
+let currentTaskData = null;
+
+function showTaskModal(staffName, taskId) {
+    const task = staffData[staffName].tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    currentTaskData = { staffName, taskId };
     
-    document.getElementById('staffSelect').addEventListener('change', (e) => {
-        displayTasks(e.target.value);
-    });
+    const modal = document.getElementById('taskModal');
+    const icon = modal.querySelector('.task-icon');
+    const title = modal.querySelector('.modal-title');
+    const description = modal.querySelector('.task-description');
+    const remarks = modal.querySelector('.remarks-text');
+
+    // Set random Christmas icon
+    const christmasIcons = ['fa-gift', 'fa-star', 'fa-snowflake', 'fa-candy-cane', 'fa-tree'];
+    const randomIcon = christmasIcons[Math.floor(Math.random() * christmasIcons.length)];
+    icon.className = `fas ${randomIcon} task-icon`;
+
+    title.textContent = `${task.id}. ${task.text}`;
+    description.innerHTML = task.description.replace(/\n/g, '<br>');
+    remarks.value = task.remarks || '';
+
+    modal.classList.add('show');
+    remarks.focus();
+}
+
+function saveTaskRemarks() {
+    if (!currentTaskData) return;
+    
+    const remarks = document.querySelector('#taskModal .remarks-text').value;
+    handleRemarksChange(currentTaskData.staffName, currentTaskData.taskId, remarks);
+    
+    // Show save confirmation
+    const saveButton = document.querySelector('#taskModal .save-button');
+    const originalText = saveButton.innerHTML;
+    saveButton.innerHTML = '<i class="fas fa-check"></i> Saved!';
+    saveButton.classList.add('saved');
+    
+    setTimeout(() => {
+        saveButton.innerHTML = originalText;
+        saveButton.classList.remove('saved');
+    }, 2000);
+}
+
+function closeTaskModal() {
+    const modal = document.getElementById('taskModal');
+    modal.classList.remove('show');
+    currentTaskData = null;
+}
+
+// Close modal when clicking outside
+document.getElementById('taskModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeTaskModal();
+    }
 });
+
+// Add task modal to the page
+const taskModal = document.createElement('div');
+taskModal.id = 'taskModal';
+taskModal.className = 'modal';
+taskModal.innerHTML = `
+    <div class="modal-content">
+        <div class="task-header">
+            <i class="fas fa-gift task-icon"></i>
+            <div class="modal-title"></div>
+        </div>
+        <div class="task-description"></div>
+        <div class="remarks">
+            <label class="remarks-label">Remarks:</label>
+            <textarea class="remarks-text"></textarea>
+        </div>
+        <button class="save-button" onclick="saveTaskRemarks()">Save Remarks</button>
+        <button onclick="closeTaskModal()">Close</button>
+    </div>
+`;
+document.body.appendChild(taskModal);

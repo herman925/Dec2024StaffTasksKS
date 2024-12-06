@@ -3,35 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christmas Tasks Manager</title>
+    <title>Pre Christmas 2024 Chase Down</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <div class="snowflakes" aria-hidden="true">
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+    </div>
     <div class="container">
-        <h1>🎄 Christmas Tasks Manager</h1>
+        <h1><i class="fas fa-holly-berry"></i> Pre Christmas 2024 Chase Down <i class="fas fa-holly-berry"></i></h1>
+        <div class="staff-selector">
+            <label for="staffSelect">Select Staff Member:</label>
+            <select id="staffSelect">
+                <option value="">Select a staff member</option>
+                <option value="Herman">Herman (SRA)</option>
+                <option value="Alvin">Alvin (PA)</option>
+                <option value="Vicky">Vicky (RA)</option>
+                <option value="Echo">Echo (SRA)</option>
+                <option value="Dickson">Dickson (SRA)</option>
+                <option value="Vincent">Vincent (PA)</option>
+                <option value="Archie">Archie (RA)</option>
+                <option value="Jady">Jady (RA)</option>
+                <option value="Kaka">Kaka (RA)</option>
+                <option value="Jane">Jane (RA)</option>
+                <option value="Cathy">Cathy (RA)</option>
+            </select>
+        </div>
+        <div class="tasks-list" id="tasksList">
+            <!-- Tasks will be dynamically loaded here -->
+        </div>
         
-        <select id="staffSelect">
-            <option value="">Select Staff Member</option>
-            <option value="Herman">Herman (SRA)</option>
-            <option value="Alvin">Alvin (PA)</option>
-            <option value="Vicky">Vicky (RA)</option>
-            <option value="Echo">Echo (SRA)</option>
-            <option value="Dickson">Dickson (SRA)</option>
-            <option value="Vincent">Vincent (PA)</option>
-            <option value="Archie">Archie (RA)</option>
-            <option value="Jady">Jady (RA)</option>
-            <option value="Kaka">Kaka (RA)</option>
-            <option value="Jane">Jane (RA)</option>
-            <option value="Cathy">Cathy (RA)</option>
-        </select>
-
-        <div id="staffInfo" class="staff-header"></div>
-
-        <div id="taskList" class="task-list">
-            <!-- Tasks will be dynamically added here -->
+        <!-- Task Details Modal -->
+        <div id="taskModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fas task-icon"></i>
+                    <h2 class="modal-title"></h2>
+                    <button class="close-button" onclick="closeTaskModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-section">
+                        <label class="section-label">Description:</label>
+                        <div class="task-description section-content"></div>
+                    </div>
+                    <div class="modal-section">
+                        <label class="section-label">Remarks:</label>
+                        <textarea class="remarks-text section-content"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="save-button" onclick="saveTaskRemarks()">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>

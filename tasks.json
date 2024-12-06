@@ -1,0 +1,318 @@
+{
+  "staff": {
+    "Herman": {
+      "position": "SRA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Update Event & Meeting record",
+          "description": "Keep track of all events and meetings in the shared calendar and ensure all records are up to date",
+          "completed": false,
+          "remarks": "Interventions are not needed but please also update items related to ECERS and EM interviews (related items for professional exchange)"
+        },
+        {
+          "id": 2,
+          "text": "Prepare for the coming programme",
+          "description": "Description for Herman's task",
+          "completed": false,
+          "remarks": "All participation details have been documented already as the programme goes along"
+        }
+      ]
+    },
+    "Alvin": {
+      "position": "PA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Task 1",
+          "description": "Description for Alvin's task 1",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 2,
+          "text": "Task 2",
+          "description": "Description for Alvin's task 2",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    },
+    "Vicky": {
+      "position": "RA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Update Google Calendar & Outlook",
+          "description": "Synchronize and update all events and activities for both Google Calendar and Outlook platforms",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 2,
+          "text": "Complete requisition",
+          "description": "Process and finalise all pending requisition forms and documentation",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 3,
+          "text": "Revise training materials",
+          "description": "Review and update the training materials to align with the latest 4-set procedures and ensure all content is current",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 4,
+          "text": "Parental Survey (ST2)",
+          "description": "Collaborate with Jady to test the survey",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 5,
+          "text": "Parental Survey (LT2)",
+          "description": "Collaborate with Jady to test the survey",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 6,
+          "text": "Parental Survey (Group 5)",
+          "description": "Collaborate with Jady to test the survey",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 7,
+          "text": "Update data collection dates with Dickson",
+          "description": "Confirm parent survey collection schedule with Dickson",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 8,
+          "text": "Final technical check on teacher survey (JotForm)",
+          "description": "Perform test to see if the teacher survey (JotForm) - both Part 1 and Part 2 - is working properly - collaborate with Jady",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 9,
+          "text": "Recruit SH for data input (Parental Survey)",
+          "description": "Begin the recruitment of Student Helpers for data input tasks of Parental Survey",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    },
+    "Echo": {
+      "position": "SRA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Sample Task for Echo",
+          "description": "Description for Echo's task",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    },
+    "Dickson": {
+      "position": "SRA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Sample Task for Dickson",
+          "description": "Description for Dickson's task",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    },
+    "Vincent": {
+      "position": "PA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Finish data cleaning for K2 Wave1",
+          "description": "Complete the data cleaning process for K2 Wave1 dataset ensuring all data is properly formatted and validated",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 2,
+          "text": "Update log/protocols of data cleaning",
+          "description": "Document all data cleaning procedures and protocols used in K2 Wave1 data processing",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 3,
+          "text": "Data analysis of Wave 1 for reporting",
+          "description": "Perform comprehensive data analysis on Wave 1 data and prepare analytical reports",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 4,
+          "text": "Home-School Collaboration Programme Participation Summary",
+          "description": "Create and update the Masterlist for Term 1 (2023/24) participation including all relevant metrics and statistics",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 5,
+          "text": "Data migration and App ownership transfer",
+          "description": "Migrate data and app ownership for the CEDS accounts (work with Echo)",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    },
+    "Archie": {
+      "position": "RA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Spring lunch invitation",
+          "description": "Coordinate and send out invitations for the upcoming spring lunch event",
+          "completed": false,
+          "remarks": "1) Invitation letter is pending for final links to all the surveys\n2) Need to create a mail merge list for sending the emails\n3) Need to get Shahid's JotForm survey ready (both languages)"
+        },
+        {
+          "id": 2,
+          "text": "Home-school interim report",
+          "description": "Prepare and finalize the home-school interim report documentation",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 3,
+          "text": "Process payments",
+          "description": "Handle and process all pending payments related to project activities and resources",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 4,
+          "text": "Complete consultant payments",
+          "description": "Process payments for Home-school collaboration programme consultants",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    },
+    "Jady": {
+      "position": "RA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Parental Survey (ST2)",
+          "description": "Collaborate with Vicky to test the survey",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 2,
+          "text": "Parental Survey (LT2)",
+          "description": "Collaborate with Vicky to test the survey",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 3,
+          "text": "Parental Survey (Group 5)",
+          "description": "Collaborate with Vicky to test the survey",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    },
+    "Kaka": {
+      "position": "RA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Sample Task for Kaka",
+          "description": "Description for Kaka's task",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    },
+    "Jane": {
+      "position": "RA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Prepare and review materials",
+          "description": "Organize and review all materials needed for upcoming activities",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 2,
+          "text": "Follow up with schools",
+          "description": "Contact and coordinate with schools regarding program schedules and requirements",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 3,
+          "text": "Confirm pre-post test and material purchase",
+          "description": "Verify pre-post test arrangements and finalize material purchase requirements",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 4,
+          "text": "Office rearrangement with Alvin",
+          "description": "Collaborate with Alvin to reorganize and optimize office space",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    },
+    "Cathy": {
+      "position": "RA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Prepare well-being retreat materials",
+          "description": "Organize and prepare all materials needed for the well-being retreat activities",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 2,
+          "text": "Complete retreat procurement",
+          "description": "Process procurement for retreat and second round well-being intervention materials",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 3,
+          "text": "Round up helper timesheet",
+          "description": "Compile and verify helper timesheet for well-being round 1 programme in consultation with Herman",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 4,
+          "text": "Write interim report",
+          "description": "Prepare interim report for well-being based on Free Play programme results and findings",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 5,
+          "text": "Update round 1 documentation",
+          "description": "Finalize and organize all documentation and recordings from round 1 activities",
+          "completed": false,
+          "remarks": ""
+        }
+      ]
+    }
+  }
+}
