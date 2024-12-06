@@ -249,174 +249,163 @@ function showOneDrivePathDialog() {
                 background-color: #2d5a40;
                 transform: translateY(-1px);
             }
-            .onedrive-modal button:first-child {
-                background-color: #f5f5f5;
-                color: #333;
-                margin-right: 10px;
+            .email-input-container {
+                display: none;
+                margin-top: 15px;
             }
-            .onedrive-modal button:first-child:hover {
+            .email-input-container.visible {
+                display: block;
+            }
+            .email-input-container input {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                margin-top: 5px;
+            }
+            .browse-button {
+                margin-left: 10px;
+                padding: 8px 16px;
+                background-color: #f5f5f5;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .browse-button:hover {
                 background-color: #e5e5e5;
             }
-            .onedrive-modal input {
-                width: 100%;
-                padding: 12px;
-                margin-bottom: 10px;
-                border: 1px solid rgba(26, 71, 42, 0.2);
-                border-radius: 8px;
-                box-sizing: border-box;
-                font-family: monospace;
-                font-size: 0.95em;
-                transition: all 0.2s ease;
-            }
-            .onedrive-modal input:focus {
-                outline: none;
-                border-color: #1a472a;
-                box-shadow: 0 0 0 2px rgba(26, 71, 42, 0.1);
-            }
-            .onedrive-modal label {
-                display: block;
-                margin-bottom: 8px;
-                color: #1a472a;
-                font-weight: 600;
-                font-size: 1.1em;
-            }
-            .onedrive-modal small {
-                color: #666;
-                display: block;
-                margin-bottom: 15px;
-                font-size: 0.9em;
-            }
-            .onedrive-modal h2 {
-                margin-top: 0;
-                margin-bottom: 25px;
-                color: #1a472a;
-                border-bottom: 1px solid rgba(26, 71, 42, 0.1);
-                padding-bottom: 15px;
-                font-size: 1.6em;
-            }
-            .onedrive-modal .path-preview {
-                background: rgba(26, 71, 42, 0.05);
-                padding: 20px;
-                border-radius: 12px;
-                margin: 15px 0;
-                border: 1px solid rgba(26, 71, 42, 0.1);
-            }
-            .onedrive-modal .path-preview-label {
-                display: block;
-                color: #1a472a;
-                margin-bottom: 12px;
-                font-weight: 600;
-                font-size: 1em;
-            }
-            .onedrive-modal .path-preview-content {
-                white-space: pre-wrap;
-                word-break: break-all;
-                color: #333;
-                font-family: monospace;
-                font-size: 0.95em;
-                line-height: 1.6;
-            }
-            .onedrive-modal .section {
-                margin-bottom: 25px;
-                padding-bottom: 25px;
-                border-bottom: 1px solid rgba(26, 71, 42, 0.1);
-            }
-            .onedrive-modal .section:last-child {
-                border-bottom: none;
-                margin-bottom: 0;
-                padding-bottom: 0;
-            }
-            .onedrive-modal .button-group {
+            .path-input-container {
                 display: flex;
-                justify-content: flex-end;
-                gap: 10px;
-                margin-top: 25px;
+                align-items: center;
+                margin-bottom: 10px;
             }
         `;
         document.head.appendChild(style);
     }
 
-    // Get current OneDrive path
-    const currentPath = localStorage.getItem('onedrivePath') || '';
-
-    // Define common OneDrive paths
-    const commonPaths = [
-        {
-            label: 'E: Drive',
-            value: 'E:'
-        },
-        {
-            label: 'D: Drive',
-            value: 'D:'
-        },
-        {
-            label: 'C: Drive with your username',
-            value: 'C:\\Users\\KeySteps'
-        }
-    ];
-
-    const dialog = document.createElement('div');
-    dialog.className = 'onedrive-modal';
-    dialog.innerHTML = `
+    const modal = document.createElement('div');
+    modal.className = 'onedrive-modal';
+    modal.innerHTML = `
         <div class="onedrive-modal-content">
-            <h2>Select OneDrive Path and Tasks File</h2>
-            <div class="section">
-                <label for="pathInput">Choose or Type Drive:</label>
-                <input type="text" 
-                       id="pathInput" 
-                       list="pathOptions" 
-                       placeholder="Select or type drive (e.g. E:)"
-                       value="${currentPath.split('\\')[0]}"
-                       autocomplete="off">
-                <datalist id="pathOptions">
-                    ${commonPaths.map(path => `
-                        <option value="${path.value}">${path.label}</option>
-                    `).join('')}
-                </datalist>
-                <div class="path-preview">
-                    <span class="path-preview-label">Full path will be:</span>
-                    <div class="path-preview-content" id="fullPathPreview"></div>
+            <h2 style="margin-top: 0;">Select OneDrive Path</h2>
+            <p>Please select your OneDrive path or upload a tasks file:</p>
+            
+            <div style="margin: 20px 0;">
+                <div class="path-input-container">
+                    <select id="pathInput" style="width: 100%; padding: 8px;">
+                        <option value="">Select a path...</option>
+                        <option value="C:">C: Drive</option>
+                        <option value="D:">D: Drive</option>
+                        <option value="E:">E: Drive</option>
+                    </select>
+                    <input type="file" id="folderInput" webkitdirectory style="display: none;">
+                    <button class="browse-button" onclick="document.getElementById('folderInput').click()">Browse...</button>
+                </div>
+                
+                <div id="emailInputContainer" class="email-input-container">
+                    <label for="staffEmail">Enter your staff email (without @eduhk.hk):</label>
+                    <input type="text" id="staffEmail" placeholder="e.g., s1234567" />
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <p style="margin: 5px 0;">Path preview:</p>
+                    <div id="pathPreview" style="word-break: break-all; padding: 10px; background: #f5f5f5; border-radius: 4px;"></div>
                 </div>
             </div>
-            <div class="section">
-                <label for="taskFileInput">Select Tasks JSON File:</label>
-                <input type="file" id="taskFileInput" accept=".json">
-                <small>Please select your tasks.json file</small>
+
+            <div style="margin: 20px 0;">
+                <p>Or upload a tasks file:</p>
+                <input type="file" id="taskFileInput" accept=".json" style="margin-top: 10px;">
             </div>
-            <div class="button-group">
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
                 <button onclick="this.closest('.onedrive-modal').remove()">Cancel</button>
-                <button onclick="saveOneDrivePath(this)">OK</button>
+                <button onclick="saveOneDrivePath(this)">Load File</button>
             </div>
         </div>
     `;
 
-    document.body.appendChild(dialog);
+    document.body.appendChild(modal);
 
-    // Add path preview update handler
-    const pathInput = dialog.querySelector('#pathInput');
-    const pathPreview = dialog.querySelector('#fullPathPreview');
-    
+    const pathInput = modal.querySelector('#pathInput');
+    const emailInputContainer = modal.querySelector('#emailInputContainer');
+    const staffEmailInput = modal.querySelector('#staffEmail');
+    const pathPreview = modal.querySelector('#pathPreview');
+
     function updatePathPreview() {
         const basePath = pathInput.value;
-        const fullPath = basePath ? 
-            basePath + 
-            '\\The Education University of Hong Kong' +
-            '\\o365grp_KeySteps@JC - General' +
-            '\\00 - Project Admin' +
-            '\\Summary of Team Task' +
-            '\\Dec 2024 Pre-Christmas Tasks' +
-            '\\tasks.json' : '';
+        let fullPath = '';
+
+        if (basePath === 'C:') {
+            const staffEmail = staffEmailInput.value.trim();
+            if (staffEmail) {
+                fullPath = `C:\\Users\\${staffEmail}` +
+                    '\\The Education University of Hong Kong' +
+                    '\\o365grp_KeySteps@JC - General' +
+                    '\\00 - Project Admin' +
+                    '\\Summary of Team Task' +
+                    '\\Dec 2024 Pre-Christmas Tasks' +
+                    '\\tasks.json';
+            } else {
+                fullPath = 'Please enter your staff email';
+            }
+            emailInputContainer.classList.add('visible');
+        } else {
+            emailInputContainer.classList.remove('visible');
+            fullPath = basePath ? 
+                basePath + 
+                '\\The Education University of Hong Kong' +
+                '\\o365grp_KeySteps@JC - General' +
+                '\\00 - Project Admin' +
+                '\\Summary of Team Task' +
+                '\\Dec 2024 Pre-Christmas Tasks' +
+                '\\tasks.json' : '';
+        }
         pathPreview.textContent = fullPath;
     }
 
     pathInput.addEventListener('input', updatePathPreview);
+    staffEmailInput.addEventListener('input', updatePathPreview);
     updatePathPreview();
+
+    // Add folder input change handler
+    const folderInput = modal.querySelector('#folderInput');
+    folderInput.addEventListener('change', function(e) {
+        if (this.files.length > 0) {
+            // Get the path from the first file
+            const path = this.files[0].webkitRelativePath.split('/')[0];
+            const select = this.closest('.onedrive-modal-content').querySelector('#pathInput');
+            
+            // Update the select with the chosen path
+            const option = document.createElement('option');
+            option.value = path;
+            option.textContent = path;
+            
+            // Check if option already exists
+            let exists = false;
+            for (let opt of select.options) {
+                if (opt.value === path) {
+                    exists = true;
+                    break;
+                }
+            }
+            
+            if (!exists) {
+                select.appendChild(option);
+            }
+            select.value = path;
+            
+            // Trigger the path preview update
+            select.dispatchEvent(new Event('input'));
+        }
+    });
 }
 
 // Function to save OneDrive path and load tasks
 async function saveOneDrivePath(button) {
     const dialog = button.closest('.onedrive-modal');
     const pathInput = dialog.querySelector('#pathInput');
+    const staffEmailInput = dialog.querySelector('#staffEmail');
     const fileInput = dialog.querySelector('#taskFileInput');
     
     try {
@@ -424,6 +413,15 @@ async function saveOneDrivePath(button) {
         let selectedPath = pathInput.value.trim();
         if (!selectedPath) {
             throw new Error('Please select or enter a OneDrive path');
+        }
+
+        // Check if C: drive is selected and validate email
+        if (selectedPath === 'C:') {
+            const staffEmail = staffEmailInput.value.trim();
+            if (!staffEmail) {
+                throw new Error('Please enter your staff email');
+            }
+            selectedPath = `C:\\Users\\${staffEmail}`;
         }
 
         // Construct full path
