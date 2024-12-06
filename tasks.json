@@ -1,26 +1,7 @@
-{
+﻿{
   "staff": {
     "Herman": {
       "position": "SRA",
-      "tasks": [
-        {
-          "id": 1,
-          "text": "Update Event & Meeting record",
-          "description": "Keep track of all events and meetings in the shared calendar and ensure all records are up to date",
-          "completed": false,
-          "remarks": "Interventions are not needed but please also update items related to ECERS and EM interviews (related items for professional exchange)"
-        },
-        {
-          "id": 2,
-          "text": "Prepare for the coming programme",
-          "description": "Description for Herman's task",
-          "completed": false,
-          "remarks": "All participation details have been documented already as the programme goes along"
-        }
-      ]
-    },
-    "Alvin": {
-      "position": "PA",
       "tasks": [
         {
           "id": 1,
@@ -35,6 +16,25 @@
           "description": "Description for Alvin's task 2",
           "completed": false,
           "remarks": ""
+        }
+      ]
+    },
+    "Alvin": {
+      "position": "PA",
+      "tasks": [
+        {
+          "id": 1,
+          "text": "Update Event & Meeting record",
+          "description": "Keep track of all events and meetings in the shared calendar and ensure all records are up to date",
+          "completed": false,
+          "remarks": "Interventions are not needed but please also update items related to ECERS and EM interviews (related items for professional exchanges"
+        },
+        {
+          "id": 2,
+          "text": "Prepare for the coming programme",
+          "description": "Description for Herman's task",
+          "completed": false,
+          "remarks": "All participation details have been documented already as the programme goes along"
         }
       ]
     },
