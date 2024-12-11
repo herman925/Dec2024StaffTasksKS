@@ -5,15 +5,50 @@
       "tasks": [
         {
           "id": 1,
-          "text": "Task 1",
-          "description": "Description for Alvin's task 1",
+          "text": "PowerPoint preparation: Free Play",
+          "description": "Prepare PowerPoint materials for Free Play",
           "completed": false,
           "remarks": ""
         },
         {
           "id": 2,
-          "text": "Task 2",
-          "description": "Description for Alvin's task 2",
+          "text": "PowerPoint preparation: STEM",
+          "description": "Prepare PowerPoint materials for STEM",
+          "completed": true,
+          "remarks": ""
+        },
+        {
+          "id": 3,
+          "text": "PowerPoint preparation: Well-being",
+          "description": "Prepare PowerPoint materials for Well-being",
+          "completed": true,
+          "remarks": ""
+        },
+        {
+          "id": 4,
+          "text": "Collect possible play spaces for Free Play intervention",
+          "description": "Send out to Hubs for their comments",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 5,
+          "text": "Y3Q1 KPI calculation",
+          "description": "Calculate KPIs for Year 3 Quarter 1",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 6,
+          "text": "Jan 4 Retreat coordination",
+          "description": "Coordinate activities for January 4th Retreat",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 7,
+          "text": "Coordinate preparation of AC meeting PowerPoint materials",
+          "description": "",
           "completed": false,
           "remarks": ""
         }
@@ -26,15 +61,15 @@
           "id": 1,
           "text": "Update Event & Meeting record",
           "description": "Keep track of all events and meetings in the shared calendar and ensure all records are up to date",
-          "completed": false,
+          "completed": true,
           "remarks": "Interventions are not needed but please also update items related to ECERS and EM interviews (related items for professional exchanges"
         },
         {
           "id": 2,
-          "text": "Prepare for the coming programme",
-          "description": "Description for Herman's task",
+          "text": "Office rearrangement with Jane",
+          "description": "Collaborate with Jane to reorganize and optimize office space",
           "completed": false,
-          "remarks": "All participation details have been documented already as the programme goes along"
+          "remarks": "Office relocation will probably commence on Jan 13 2025"
         }
       ]
     },
@@ -227,6 +262,13 @@
           "completed": false,
           "remarks": ""
         }
+        {
+          "id": 4,
+          "text": "Support Cathy for retreat materials preparation",
+          "description": "",
+          "completed": false,
+          "remarks": ""
+        }
       ]
     },
     "Kaka": {
@@ -246,21 +288,21 @@
       "tasks": [
         {
           "id": 1,
-          "text": "Prepare and review materials",
-          "description": "Organize and review all materials needed for upcoming activities",
+          "text": "Data Management: Qualtrics",
+          "description": "Finish data cleaning of E-prime for K2 Wave 1",
           "completed": false,
           "remarks": ""
         },
         {
           "id": 2,
-          "text": "Follow up with schools",
-          "description": "Contact and coordinate with schools regarding program schedules and requirements",
+          "text": "Data Management: E-Prime",
+          "description": "Update log /protocols of data cleaning",
           "completed": false,
           "remarks": ""
         },
         {
           "id": 3,
-          "text": "Confirm pre-post test and material purchase",
+          "text": "Programme - Self-regulation",
           "description": "Verify pre-post test arrangements and finalize material purchase requirements",
           "completed": false,
           "remarks": ""
