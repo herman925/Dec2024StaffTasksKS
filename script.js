@@ -591,6 +591,31 @@ async function saveOneDrivePath(button) {
     }
 }
 
+// Function to load default tasks from the cloud
+async function loadDefaultTasks() {
+    try {
+        const response = await fetch('tasks.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        staffData = data.staff;
+        
+        if (hasNoTasks()) {
+            showPointingArrow();
+        } else {
+            removePointingArrow();
+        }
+        
+        displayTasks(document.getElementById('staffSelect').value);
+        showLoadingMessage('Default tasks loaded successfully!');
+    } catch (error) {
+        console.error('Error loading default tasks:', error);
+        showLoadingMessage('Error loading default tasks. Please try again.', true);
+        showPointingArrow();
+    }
+}
+
 // Function to load tasks from JSON
 async function loadTasksFromJSON() {
     const onedrivePath = getOneDrivePath();
@@ -683,99 +708,12 @@ async function saveTasksToJSON(confirmed = false) {
 
 // Function to add change path button
 function addChangePathButton() {
-    const container = document.querySelector('.container');
-    const button = document.createElement('button');
-    button.textContent = 'Load File from OneDrive';
-    button.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        padding: 10px 20px;
-        background-color: #1a472a;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        z-index: 1000;
-    `;
-    button.addEventListener('mouseover', () => {
-        button.style.backgroundColor = '#c41e3a';
-    });
-    button.addEventListener('mouseout', () => {
-        button.style.backgroundColor = '#1a472a';
-    });
-    button.onclick = showOneDrivePathDialog;
-    document.body.appendChild(button);
-}
-
-// Create or update the persistent save notification
-function showPersistentSaveNotification() {
-    let notification = document.getElementById('saveNotification');
-    if (!notification) {
-        notification = document.createElement('div');
-        notification.id = 'saveNotification';
-        notification.className = 'persistent-notification';
-        
-        const message = document.createElement('span');
-        message.textContent = 'You have unsaved changes';
-        
-        const buttonGroup = document.createElement('div');
-        buttonGroup.className = 'notification-buttons';
-        
-        const saveButton = document.createElement('button');
-        saveButton.textContent = 'Save Changes';
-        saveButton.onclick = async () => {
-            await saveTasksToJSON(true);
-            notification.remove();
-        };
-        
-        const cancelButton = document.createElement('button');
-        cancelButton.textContent = 'Discard';
-        cancelButton.onclick = () => {
-            loadTasksFromJSON(); // Reload original data
-            notification.remove();
-        };
-        
-        buttonGroup.appendChild(saveButton);
-        buttonGroup.appendChild(cancelButton);
-        
-        notification.appendChild(message);
-        notification.appendChild(buttonGroup);
-        document.body.appendChild(notification);
-    }
-}
-
-// Update task handling
-async function updateTask(staffName, taskId, updates) {
-    if (!staffData[staffName]) return;
-    
-    const task = staffData[staffName].tasks.find(t => t.id === taskId);
-    if (!task) return;
-    
-    // Apply updates
-    Object.assign(task, updates);
-    
-    // Show persistent save notification instead of immediate popup
-    showPersistentSaveNotification();
-    
-    // Update display
-    displayTasks(staffName);
-}
-
-// Handle checkbox changes
-function handleCheckboxChange(staffName, taskId, checked) {
-    updateTask(staffName, taskId, { completed: checked });
-}
-
-// Handle remarks changes
-function handleRemarksChange(staffName, taskId, remarks) {
-    updateTask(staffName, taskId, { remarks: remarks });
+    // Function disabled - buttons now handled in HTML
+    return;
 }
 
 // Call this when the page loads
-window.addEventListener('load', addChangePathButton);
+// window.addEventListener('load', addChangePathButton);  
 
 // Function to show loading message
 function showLoadingMessage(message, error = false) {
@@ -874,3 +812,67 @@ taskModal.innerHTML = `
     </div>
 `;
 document.body.appendChild(taskModal);
+
+// Update task handling
+async function updateTask(staffName, taskId, updates) {
+    if (!staffData[staffName]) return;
+    
+    const task = staffData[staffName].tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    // Apply updates
+    Object.assign(task, updates);
+    
+    // Show persistent save notification instead of immediate popup
+    showPersistentSaveNotification();
+    
+    // Update display
+    displayTasks(staffName);
+}
+
+// Handle checkbox changes
+function handleCheckboxChange(staffName, taskId, checked) {
+    updateTask(staffName, taskId, { completed: checked });
+}
+
+// Handle remarks changes
+function handleRemarksChange(staffName, taskId, remarks) {
+    updateTask(staffName, taskId, { remarks: remarks });
+}
+
+// Create or update the persistent save notification
+function showPersistentSaveNotification() {
+    let notification = document.getElementById('saveNotification');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'saveNotification';
+        notification.className = 'persistent-notification';
+        
+        const message = document.createElement('span');
+        message.textContent = 'You have unsaved changes';
+        
+        const buttonGroup = document.createElement('div');
+        buttonGroup.className = 'notification-buttons';
+        
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Save Changes';
+        saveButton.onclick = async () => {
+            await saveTasksToJSON(true);
+            notification.remove();
+        };
+        
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = 'Discard';
+        cancelButton.onclick = () => {
+            loadTasksFromJSON(); // Reload original data
+            notification.remove();
+        };
+        
+        buttonGroup.appendChild(saveButton);
+        buttonGroup.appendChild(cancelButton);
+        
+        notification.appendChild(message);
+        notification.appendChild(buttonGroup);
+        document.body.appendChild(notification);
+    }
+}

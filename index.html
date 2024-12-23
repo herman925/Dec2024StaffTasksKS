@@ -43,30 +43,37 @@
         <div class="tasks-list" id="tasksList">
             <!-- Tasks will be dynamically loaded here -->
         </div>
-        
-        <!-- Task Details Modal -->
-        <div id="taskModal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <i class="fas task-icon"></i>
-                    <h2 class="modal-title"></h2>
-                    <button class="close-button" onclick="closeTaskModal()">×</button>
+    </div>
+    <div class="bottom-buttons">
+        <button onclick="loadDefaultTasks()" class="load-file-button default-tasks-button">
+            <i class="fas fa-cloud-download-alt"></i> Load Default Tasks from Cloud
+        </button>
+        <button onclick="showOneDrivePathDialog()" class="load-file-button">
+            <i class="fas fa-folder-open"></i> Load File from OneDrive
+        </button>
+    </div>
+    <!-- Task Details Modal -->
+    <div id="taskModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas task-icon"></i>
+                <h2 class="modal-title"></h2>
+                <button class="close-button" onclick="closeTaskModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <label class="section-label">Description:</label>
+                    <div class="task-description section-content"></div>
                 </div>
-                <div class="modal-body">
-                    <div class="modal-section">
-                        <label class="section-label">Description:</label>
-                        <div class="task-description section-content"></div>
-                    </div>
-                    <div class="modal-section">
-                        <label class="section-label">Remarks:</label>
-                        <textarea class="remarks-text section-content"></textarea>
-                    </div>
+                <div class="modal-section">
+                    <label class="section-label">Remarks:</label>
+                    <textarea class="remarks-text section-content"></textarea>
                 </div>
-                <div class="modal-footer">
-                    <button class="save-button" onclick="saveTaskRemarks()">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="save-button" onclick="saveTaskRemarks()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
             </div>
         </div>
     </div>

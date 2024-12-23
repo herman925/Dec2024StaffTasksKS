@@ -785,3 +785,81 @@ h1 i {
         padding: 20px;
     }
 }
+
+.load-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.bottom-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.load-file-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #1a472a;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+.default-tasks-button {
+    right: 220px;
+}
+
+.load-file-button:hover {
+    background-color: #c41e3a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.load-file-button i {
+    font-size: 16px;
+}
+
+.action-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #1a472a;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.action-button:hover {
+    background-color: #2d5a40;
+}
+
+.action-button i {
+    font-size: 16px;
+}
