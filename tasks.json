@@ -28,28 +28,28 @@
           "id": 4,
           "text": "Collect possible play spaces for Free Play intervention",
           "description": "Send out to Hubs for their comments",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 5,
           "text": "Y3Q1 KPI calculation",
           "description": "Calculate KPIs for Year 3 Quarter 1",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 6,
           "text": "Jan 4 Retreat coordination",
           "description": "Coordinate activities for January 4th Retreat",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 7,
           "text": "Coordinate preparation of AC meeting PowerPoint materials",
           "description": "",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         }
       ]
@@ -62,7 +62,7 @@
           "text": "Update Event & Meeting record",
           "description": "Keep track of all events and meetings in the shared calendar and ensure all records are up to date",
           "completed": true,
-          "remarks": "Interventions are not needed but please also update items related to ECERS and EM interviews (related items for professional exchanges"
+          "remarks": "Interventions are not needed but please also update items related to ECERS and EM interviews (related items for professional exchanges)"
         },
         {
           "id": 2,
@@ -94,49 +94,49 @@
           "id": 3,
           "text": "Revise training materials",
           "description": "Review and update the training materials to align with the latest 4-set procedures and ensure all content is current",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 4,
           "text": "Parental Survey (ST2)",
           "description": "Collaborate with Jady to test the survey",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 5,
           "text": "Parental Survey (LT2)",
           "description": "Collaborate with Jady to test the survey",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 6,
           "text": "Parental Survey (Group 5)",
           "description": "Collaborate with Jady to test the survey",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 7,
           "text": "Update data collection dates with Dickson",
           "description": "Confirm parent survey collection schedule with Dickson",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 8,
           "text": "Final technical check on teacher survey (JotForm)",
           "description": "Perform test to see if the teacher survey (JotForm) - both Part 1 and Part 2 - is working properly - collaborate with Jady",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 9,
           "text": "Recruit SH for data input (Parental Survey)",
           "description": "Begin the recruitment of Student Helpers for data input tasks of Parental Survey",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         }
       ]
@@ -245,28 +245,28 @@
           "id": 1,
           "text": "Parental Survey (ST2)",
           "description": "Collaborate with Vicky to test the survey",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 2,
           "text": "Parental Survey (LT2)",
           "description": "Collaborate with Vicky to test the survey",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 3,
           "text": "Parental Survey (Group 5)",
           "description": "Collaborate with Vicky to test the survey",
-          "completed": false,
+          "completed": true,
           "remarks": ""
-        }
+        },
         {
           "id": 4,
           "text": "Support Cathy for retreat materials preparation",
           "description": "",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         }
       ]
@@ -276,8 +276,22 @@
       "tasks": [
         {
           "id": 1,
-          "text": "Sample Task for Kaka",
-          "description": "Description for Kaka's task",
+          "text": "Update the progress of data collection",
+          "description": "Track and document the current status of data collection efforts",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 2,
+          "text": "Training & Helper Recording form data input",
+          "description": "Enter data from recording forms for training and helper records",
+          "completed": false,
+          "remarks": ""
+        },
+        {
+          "id": 3,
+          "text": "Review the data collection with Echo (Qualtircs)",
+          "description": "Collaborate with Echo to review and validate collected data",
           "completed": false,
           "remarks": ""
         }
@@ -324,7 +338,7 @@
           "text": "Prepare well-being retreat materials",
           "description": "Organize and prepare all materials needed for the well-being retreat activities",
           "completed": false,
-          "remarks": "Please use https://herman925.github.io/KSWellBeingRetreat/pages/resources.html\nto track the materials needed"
+          "remarks": "Please use https://herman925.github.io/KSWellBeingRetreat/pages/resources.html\nto track the materials needed\n\nPending - Hand sanitizer"
         },
         {
           "id": 2,
@@ -337,8 +351,8 @@
           "id": 3,
           "text": "Round up helper timesheet",
           "description": "Compile and verify helper timesheet for well-being round 1 programme in consultation with Herman",
-          "completed": false,
-          "remarks": ""
+          "completed": true,
+          "remarks": "Send WhatApp to individual helper with the timesheet record to see if they agree."
         },
         {
           "id": 4,
@@ -351,7 +365,7 @@
           "id": 5,
           "text": "Update round 1 documentation",
           "description": "Finalize and organize all documentation and recordings from round 1 activities",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         }
       ]
