@@ -68,7 +68,7 @@
           "id": 2,
           "text": "Office rearrangement with Jane",
           "description": "Collaborate with Jane to reorganize and optimize office space",
-          "completed": false,
+          "completed": true,
           "remarks": "Office relocation will probably commence on Jan 13 2025"
         }
       ]
@@ -172,14 +172,14 @@
           "id": 1,
           "text": "Finish data cleaning for K2 Wave1",
           "description": "Complete the data cleaning process for K2 Wave1 dataset ensuring all data is properly formatted and validated",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 2,
           "text": "Update log/protocols of data cleaning",
           "description": "Document all data cleaning procedures and protocols used in K2 Wave1 data processing",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
@@ -193,15 +193,15 @@
           "id": 4,
           "text": "Home-School Collaboration Programme Participation Summary",
           "description": "Create and update the Masterlist for Term 1 (2023/24) participation including all relevant metrics and statistics",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 5,
           "text": "Data migration and App ownership transfer",
           "description": "Migrate data and app ownership for the CEDS accounts (work with Echo)",
-          "completed": false,
-          "remarks": ""
+          "completed": true,
+          "remarks": "confirmed for May"
         }
       ]
     },
@@ -212,7 +212,7 @@
           "id": 1,
           "text": "Spring lunch invitation",
           "description": "Coordinate and send out invitations for the upcoming spring lunch event",
-          "completed": false,
+          "completed": true,
           "remarks": "1) Invitation letter is pending for final links to all the surveys\n2) Need to create a mail merge list for sending the emails\n3) Need to get Shahid's JotForm survey ready (both languages)"
         },
         {
@@ -226,14 +226,14 @@
           "id": 3,
           "text": "Process payments",
           "description": "Handle and process all pending payments related to project activities and resources",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 4,
           "text": "Complete consultant payments",
           "description": "Process payments for Home-school collaboration programme consultants",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         }
       ]
@@ -278,21 +278,21 @@
           "id": 1,
           "text": "Update the progress of data collection",
           "description": "Track and document the current status of data collection efforts",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 2,
           "text": "Training & Helper Recording form data input",
           "description": "Enter data from recording forms for training and helper records",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 3,
           "text": "Review the data collection with Echo (Qualtircs)",
           "description": "Collaborate with Echo to review and validate collected data",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         }
       ]
@@ -304,28 +304,28 @@
           "id": 1,
           "text": "Data Management: Qualtrics",
           "description": "Finish data cleaning of E-prime for K2 Wave 1",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 2,
           "text": "Data Management: E-Prime",
           "description": "Update log /protocols of data cleaning",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 3,
           "text": "Programme - Self-regulation",
           "description": "Verify pre-post test arrangements and finalize material purchase requirements",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 4,
           "text": "Office rearrangement with Alvin",
           "description": "Collaborate with Alvin to reorganize and optimize office space",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         }
       ]
