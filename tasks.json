@@ -80,14 +80,14 @@
           "id": 1,
           "text": "Update Google Calendar & Outlook",
           "description": "Synchronize and update all events and activities for both Google Calendar and Outlook platforms",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
           "id": 2,
           "text": "Complete requisition",
           "description": "Process and finalise all pending requisition forms and documentation",
-          "completed": false,
+          "completed": true,
           "remarks": ""
         },
         {
